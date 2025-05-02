@@ -101,7 +101,18 @@ const Header = ({title}) => {
                 <h3 className="text-lg font-semibold text-white">Thông báo</h3>
               </div>
               
-              <div className="max-h-80 overflow-y-auto">
+              <div 
+                className="max-h-80 overflow-y-auto" 
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
+                }}
+              >
+                <style jsx>{`
+                  .max-h-80::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
                 {notifications.length > 0 ? (
                   notifications.map(notification => (
                     <div 

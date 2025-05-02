@@ -8,168 +8,17 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
+  Film,
+  Award,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Combobox from "./ComboboxCustom";
 import axios from "axios";
 
-const course_DATA = [
-  {
-    id: 1,
-    actor: "Huỳnh Thanh Giang",
-    image: "../ZangHuynh.png",
-    name: "Khóa học HTML, CSS pro",
-    category: "Lập trình",
-    price: 199.99,
-    date: "2023-01-01",
-    statusbar: "Chờ duyệt",
-  },
-  {
-    id: 2,
-    actor: "Huỳnh Thanh Giang",
-    image: "../ZangHuynh.png",
-    name: "Khóa học ReactJS",
-    category: "Lập trình",
-    price: 299.99,
-    date: "2023-02-01",
-    statusbar: "Chờ duyệt",
-  },
-  {
-    id: 3,
-    actor: "Huỳnh Thanh Giang",
-    image: "../ZangHuynh.png",
-    name: "Khóa học NodeJS",
-    category: "Lập trình",
-    price: 399.99,
-    date: "2023-03-01",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 4,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học Python",
-    category: "Lập trình",
-    price: 499.99,
-    date: "2023-04-01",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 5,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học Java",
-    category: "Lập trình",
-    price: 599.99,
-    date: "2023-05-01",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 6,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học C++",
-    category: "Lập trình",
-    price: 699.99,
-    date: "2023-06-01",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 7,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học PHP",
-    category: "Lập trình",
-    price: 799.99,
-    date: "2023-07-01",
-    statusbar: "Chờ duyệt",
-  },
-  {
-    id: 8,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học Ruby",
-    category: "Lập trình",
-    price: 899.99,
-    date: "2023-08-01",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 9,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học Swift",
-    category: "Lập trình",
-    price: 999.99,
-    date: "2023-09-01",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 10,
-    actor: "Huỳnh Thanh Giang",
-    image: "../ZangHuynh.png",
-    name: "Khóa học Kotlin",
-    category: "Lập trình",
-    price: 1099.99,
-    date: "2023-10-01",
-    statusbar: "Vi phạm",
-  },
-  {
-    id: 11,
-    actor: "Huỳnh Thanh Giang",
-    image: "../ZangHuynh.png",
-    name: "Khóa học Go",
-    category: "Lập trình",
-    price: 1199.99,
-    date: "2023-11-01",
-    statusbar: "Vi phạm",
-  },
-  {
-    id: 12,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học C#",
-    category: "Lập trình",
-    price: 1299.99,
-    date: "2023-12-01",
-    statusbar: "Chờ duyệt",
-  },
-  {
-    id: 13,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học TypeScript",
-    category: "Lập trình",
-    price: 1399.99,
-    date: "2023-01-15",
-    statusbar: "Chờ duyệt",
-  },
-  {
-    id: 14,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học Dart",
-    category: "Lập trình",
-    price: 1499.99,
-    date: "2023-02-15",
-    statusbar: "Đã duyệt",
-  },
-  {
-    id: 15,
-    actor: "Phan Phước Hiệp",
-    image: "../PPH.jpg",
-    name: "Khóa học R",
-    category: "Lập trình",
-    price: 1599.99,
-    date: "2023-03-15",
-    statusbar: "Vi phạm",
-  },
-];
-
 const CoursesTable = () => {
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredCourses, setFilteredCourses] = useState([]); // Initialize as empty array
+  const [filteredCourses, setFilteredCourses] = useState([]); 
   const [sortOption, setSortOption] = useState("Chờ duyệt");
   const [alphabetOption, setAlphabetOption] = useState("A-Z");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -182,10 +31,36 @@ const CoursesTable = () => {
   const deleteModalRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const coursesPerPage = 10;
+  const [showCertificate, setShowCertificate] = useState(false);
+  const [showVideos, setShowVideos] = useState(false);
 
   const sortOptions = ["Chờ duyệt", "Đã duyệt", "Vi phạm", "Tất cả"];
   const alphabetOptions = ["A-Z", "Z-A", "Mới nhất", "Cũ nhất"];
   const statusOptions = ["Chờ duyệt", "Đã duyệt", "Vi phạm"];
+  
+  // Kiểm tra xem chuỗi có phải là Base64 hay không
+  const isBase64Image = (src) => {
+    return src && (
+      src.startsWith('data:image') || 
+      src.startsWith('data:application/octet-stream;base64') ||
+      src.length > 100 && /^[A-Za-z0-9+/=]+$/.test(src)
+    );
+  };
+
+  const getImageSrc = (image) => {
+    console.log(image)
+    if (!image) return "../avatarAdmin.png";
+    
+    if (isBase64Image(image)) {
+      if (image.startsWith('data:')) {
+        return image;
+      }
+      console.log(image)
+      return `data:image/jpeg;base64,${image}`;
+    }
+    
+    return image;
+  };
 
   // Fetch dữ liệu từ API
   useEffect(() => {
@@ -199,18 +74,36 @@ const CoursesTable = () => {
       })
       .then(data => {
         console.log("fetch() got:", data);
-        setCourses(data.length > 0 ? data : course_DATA); 
+        const formattedData = data.map(course => ({
+          id: course.id || course._id, 
+          actor: course.actor || "Unknown",
+          image: course.image || "",
+          name: course.name || "Untitled Course",
+          category: course.category ? 
+            (typeof course.category === 'object' ? 
+              `${course.category.field} - ${course.category.name}` : 
+              course.category) : 
+            "Uncategorized",
+          categoryObject: course.category || { name: "Uncategorized", field: "Other" },
+          price: course.price || 0,
+          date: course.date ? new Date(course.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          statusbar: course.statusbar || "Chờ duyệt",
+          certificate: course.certificate || null,
+          video_courses: course.video_courses || [],
+
+          _original: course
+        }));
+        
+        setCourses(formattedData);
         setIsLoading(false);
       })
       .catch(err => {
         console.error("fetch() error:", err);
-        setCourses(course_DATA); 
         setError(err.message);
         setIsLoading(false);
       });
   }, []);
   
-
   useEffect(() => {
     let result = [...courses];
 
@@ -219,7 +112,8 @@ const CoursesTable = () => {
       result = result.filter(
         (course) =>
           course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          course.category.toLowerCase().includes(searchTerm.toLowerCase())
+          course.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          course.actor.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -240,7 +134,7 @@ const CoursesTable = () => {
     }
 
     setFilteredCourses(result);
-  }, [searchTerm, sortOption, alphabetOption, courses]); // Add courses as dependency
+  }, [searchTerm, sortOption, alphabetOption, courses]);
 
   // Tính giá trị mỗi trang
   const indexOfLastCourse = currentPage * coursesPerPage;
@@ -270,19 +164,36 @@ const CoursesTable = () => {
   const handleOpenModal = (course) => {
     setSelectedCourse(course);
     setIsModalOpen(true);
+    setShowCertificate(false);
+    setShowVideos(false);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCourse(null);
+    setShowCertificate(false);
+    setShowVideos(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setSelectedCourse({
-      ...selectedCourse,
-      [name]: name === "price" ? parseFloat(value) : value,
-    });
+    
+    if (name.includes('.')) {
+      // Category
+      const [parent, child] = name.split('.');
+      setSelectedCourse({
+        ...selectedCourse,
+        [parent]: {
+          ...selectedCourse[parent],
+          [child]: value
+        }
+      });
+    } else {
+      setSelectedCourse({
+        ...selectedCourse,
+        [name]: name === "price" ? parseFloat(value) : value,
+      });
+    }
   };
 
   const handleStatusChange = (newStatus) => {
@@ -295,35 +206,83 @@ const CoursesTable = () => {
   const handleSaveChanges = () => {
     if (!selectedCourse) return;
     
-    // Use axios to update course on the backend
-    axios.put(`http://localhost:5000/api/courses/${selectedCourse.id}`, selectedCourse)
+    const payload = {
+      name: selectedCourse.name,
+      actor: selectedCourse.actor,
+      category: selectedCourse.categoryObject,
+      price: selectedCourse.price,
+      date: new Date(selectedCourse.date).toISOString(),
+      statusbar: selectedCourse.statusbar,
+      image: selectedCourse.image,
+      certificate: selectedCourse.certificate,
+      video_courses: selectedCourse.video_courses
+    };
+    
+    const courseId = selectedCourse.id;
+    
+    setIsLoading(true);
+    
+    axios.put(`http://localhost:5000/api/courses/${courseId}`, payload)
       .then(response => {
         console.log("Course updated:", response.data);
-        // Update local state
+        
+        const updatedData = mapApiResponseToCourse(response.data);
+        
         const updatedCourses = courses.map((course) =>
-          course.id === selectedCourse.id ? selectedCourse : course
+          course.id === selectedCourse.id ? updatedData : course
         );
+        
         setCourses(updatedCourses);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error("Error updating course:", error);
-        // Fallback to local update if API fails
         const updatedCourses = courses.map((course) =>
           course.id === selectedCourse.id ? selectedCourse : course
         );
         setCourses(updatedCourses);
+        setError("Failed to update course. Changes applied locally only.");
+        setIsLoading(false);
+      })
+      .finally(() => {
+        handleCloseModal();
       });
-    
-    handleCloseModal();
+  };
+  
+
+  const mapApiResponseToCourse = (apiCourse) => {
+    return {
+      id: apiCourse.id || apiCourse._id,
+      actor: apiCourse.actor || "Unknown",
+      image: apiCourse.image || "",
+      name: apiCourse.name || "Untitled Course",
+      category: apiCourse.category ? 
+        (typeof apiCourse.category === 'object' ? 
+          `${apiCourse.category.field} - ${apiCourse.category.name}` : 
+          apiCourse.category) : 
+        "Uncategorized",
+      categoryObject: apiCourse.category || { name: "Uncategorized", field: "Other" },
+      price: apiCourse.price || 0,
+      date: apiCourse.date ? new Date(apiCourse.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      statusbar: apiCourse.statusbar || "Chờ duyệt",
+      certificate: apiCourse.certificate || null,
+      video_courses: apiCourse.video_courses || [],
+      _original: apiCourse
+    };
   };
 
   const handleApprove = (courseId) => {
     const courseToUpdate = courses.find(course => course.id === courseId);
     if (!courseToUpdate) return;
     
-    const updatedCourse = { ...courseToUpdate, statusbar: "Đã duyệt" };
+    // Create payload with only necessary fields
+    const payload = {
+      statusbar: "Đã duyệt"
+    };
     
-    axios.put(`http://localhost:5000/api/courses/${courseId}`, updatedCourse)
+    setIsLoading(true);
+    
+    axios.put(`http://localhost:5000/api/courses/${courseId}`, payload)
       .then(response => {
         console.log("Course approved:", response.data);
         // Update local state
@@ -331,6 +290,7 @@ const CoursesTable = () => {
           course.id === courseId ? { ...course, statusbar: "Đã duyệt" } : course
         );
         setCourses(updatedCourses);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error("Error approving course:", error);
@@ -339,6 +299,8 @@ const CoursesTable = () => {
           course.id === courseId ? { ...course, statusbar: "Đã duyệt" } : course
         );
         setCourses(updatedCourses);
+        setError("Failed to approve course. Changes applied locally only.");
+        setIsLoading(false);
       });
   };
 
@@ -355,7 +317,11 @@ const CoursesTable = () => {
   const handleDeleteCourse = () => {
     if (!courseToDelete) return;
     
-    axios.delete(`http://localhost:5000/api/courses/${courseToDelete.id}`)
+    const courseId = courseToDelete.id;
+    
+    setIsLoading(true);
+    
+    axios.delete(`http://localhost:5000/api/courses/${courseId}`)
       .then(response => {
         console.log("Course deleted:", response.data);
         // Update local state
@@ -363,6 +329,7 @@ const CoursesTable = () => {
           (course) => course.id !== courseToDelete.id
         );
         setCourses(updatedCourses);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error("Error deleting course:", error);
@@ -371,9 +338,39 @@ const CoursesTable = () => {
           (course) => course.id !== courseToDelete.id
         );
         setCourses(updatedCourses);
+        setError("Failed to delete course. Removed locally only.");
+        setIsLoading(false);
+      })
+      .finally(() => {
+        handleCloseDeleteModal();
       });
-    
-    handleCloseDeleteModal();
+  };
+
+  // Format date to display
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString; // If invalid date, return original string
+      return date.toISOString().split('T')[0];
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Toggle certificate view
+  const toggleCertificate = () => {
+    setShowCertificate(!showCertificate);
+    if (!showCertificate) {
+      setShowVideos(false);
+    }
+  };
+
+  // Toggle videos view
+  const toggleVideos = () => {
+    setShowVideos(!showVideos);
+    if (!showVideos) {
+      setShowCertificate(false);
+    }
   };
 
   // Cuộn đến modal khi mở
@@ -484,9 +481,9 @@ const CoursesTable = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-700">
-              {currentCourses.map((course) => (
+              {currentCourses.map((course, index) => (
                 <motion.tr
-                  key={course.id}
+                  key={`course-${course.id || index}-${index}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
@@ -495,14 +492,16 @@ const CoursesTable = () => {
                     {course.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {course.name}
+                    <div className="flex items-center gap-2">
+                      {course.name}
+                    </div>
                   </td>
-                  <td className="px-6S py-4 whitespace-nowrap text-sm font-medium text-gray-100 gap-2 items-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100 gap-2 items-center">
                     <div className="flex items-center gap-2">
                       <img
-                        src={course.image}
+                        src={getImageSrc(course.image)}
                         alt="course img"
-                        className="size-10 rounded-full"
+                        className="size-10 rounded-full object-cover"
                       />
                       {course.actor}
                     </div>
@@ -514,7 +513,7 @@ const CoursesTable = () => {
                     {course.price.toFixed(2)} đ
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {course.date}
+                    {formatDate(course.date)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                     {course.statusbar === "Chờ duyệt" ? (
@@ -690,12 +689,25 @@ const CoursesTable = () => {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Lĩnh vực
+                </label>
+                <input
+                  type="text"
+                  name="categoryObject.field"
+                  value={selectedCourse.categoryObject?.field || ""}
+                  onChange={handleInputChange}
+                  className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Loại khóa học
                 </label>
                 <input
                   type="text"
-                  name="category"
-                  value={selectedCourse.category}
+                  name="categoryObject.name"
+                  value={selectedCourse.categoryObject?.name || ""}
                   onChange={handleInputChange}
                   className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -721,7 +733,7 @@ const CoursesTable = () => {
                 <input
                   type="date"
                   name="date"
-                  value={selectedCourse.date}
+                  value={formatDate(selectedCourse.date)}
                   onChange={handleInputChange}
                   className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -752,6 +764,131 @@ const CoursesTable = () => {
                 </div>
               </div>
             </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Hình ảnh
+              </label>
+              <div className="flex items-center gap-2">
+                <img 
+                  src={getImageSrc(selectedCourse.image)} 
+                  alt="Author preview" 
+                  className="size-12 rounded-full object-cover"
+                />
+                <span className="text-gray-300 text-sm">
+                  {isBase64Image(selectedCourse.image) ? 'Hình ảnh Base64' : 'Hình ảnh URL'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+              {selectedCourse.certificate && (
+                <button
+                  onClick={toggleCertificate}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                    showCertificate ? "bg-yellow-600" : "bg-gray-700"
+                  } text-white hover:bg-yellow-500 transition`}
+                >
+                  <Award size={16} />
+                  {showCertificate ? "Ẩn chứng chỉ" : "Xem chứng chỉ"}
+                </button>
+              )}
+
+              {selectedCourse.video_courses && selectedCourse.video_courses.length > 0 && (
+                <button
+                  onClick={toggleVideos}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                    showVideos ? "bg-blue-600" : "bg-gray-700"
+                  } text-white hover:bg-blue-500 transition`}
+                >
+                  <Film size={16} />
+                  {showVideos ? "Ẩn videos" : `Xem videos (${selectedCourse.video_courses.length})`}
+                </button>
+              )}
+            </div>
+
+            {/* Certificate section */}
+            {showCertificate && selectedCourse.certificate && (
+              <div className="bg-gray-700 p-4 rounded-lg mb-4">
+                <h3 className="text-white font-medium mb-3">Thông tin chứng chỉ</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-gray-400 text-sm">Tên chứng chỉ:</p>
+                    <p className="text-white">{selectedCourse.certificate.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Cấp bởi:</p>
+                    <p className="text-white">{selectedCourse.certificate.actor}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-gray-400 text-sm">Mô tả:</p>
+                    <p className="text-white">{selectedCourse.certificate.description}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Được duyệt bởi:</p>
+                    <p className="text-white">{selectedCourse.certificate.appoved_by || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Trạng thái:</p>
+                    <p className={`font-semibold ${
+                      selectedCourse.certificate.status === "Vi phạm" 
+                        ? "text-red-400" 
+                        : selectedCourse.certificate.status === "Đã duyệt"
+                          ? "text-green-400"
+                          : "text-yellow-400"
+                    }`}>
+                      {selectedCourse.certificate.status || "Chờ duyệt"}
+                    </p>
+                  </div>
+                  {selectedCourse.certificate.dataImage && (
+                    <div className="col-span-2 mt-2">
+                      <p className="text-gray-400 text-sm mb-2">Mẫu chứng chỉ:</p>
+                      <img 
+                        src={getImageSrc(selectedCourse.certificate.dataImage)} 
+                        alt="Certificate template" 
+                        className="max-h-40 rounded-md object-contain mx-auto"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Videos section */}
+            {showVideos && selectedCourse.video_courses && selectedCourse.video_courses.length > 0 && (
+              <div className="bg-gray-700 p-4 rounded-lg mb-4">
+                <h3 className="text-white font-medium mb-3">Danh sách video bài giảng</h3>
+                <div className="max-h-60 overflow-y-auto">
+                  <table className="min-w-full divide-y divide-gray-600">
+                    <thead className="bg-gray-800 sticky top-0">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-400">STT</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-400">Link video</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-400">Ngày tạo</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-600">
+                      {selectedCourse.video_courses.map((video, index) => (
+                        <tr key={index} className="hover:bg-gray-800">
+                          <td className="px-4 py-2 text-sm text-gray-300">{index + 1}</td>
+                          <td className="px-4 py-2 text-sm text-blue-400">
+                            <a 
+                              href={video.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="hover:underline"
+                            >
+                              {video.link.substring(0, 40)}...
+                            </a>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-300">{formatDate(video.createAt)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end gap-2 mt-6">
               <button

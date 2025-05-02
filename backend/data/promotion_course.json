@@ -1,0 +1,48 @@
+[
+    {
+      "id": "promo001",
+      "name": "Ưu đãi đầu năm",
+      "discount": 50000.0,
+      "date_start": "2025-01-01T00:00:00Z",
+      "date_end": "2025-01-31T23:59:59Z",
+      "percent": 10.0,
+      "course_id": "course001"
+    },
+    {
+      "id": "promo002",
+      "name": "Giảm giá đặc biệt cho học sinh",
+      "discount": 0.0,
+      "date_start": "2025-02-10T00:00:00Z",
+      "date_end": "2025-02-25T23:59:59Z",
+      "percent": 20.0,
+      "course_id": "course003"
+    },
+    {
+      "id": "promo003",
+      "name": "Tháng 3 siêu sale",
+      "discount": 100000.0,
+      "date_start": "2025-03-01T00:00:00Z",
+      "date_end": "2025-03-15T23:59:59Z",
+      "percent": 0.0,
+      "course_id": "course005"
+    },
+    {
+      "id": "promo004",
+      "name": "Combo tiết kiệm",
+      "discount": 30000.0,
+      "date_start": "2025-04-01T00:00:00Z",
+      "date_end": "2025-04-10T23:59:59Z",
+      "percent": 5.0,
+      "course_id": "course002"
+    },
+    {
+      "id": "promo005",
+      "name": "Tri ân khách hàng cũ",
+      "discount": 0.0,
+      "date_start": "2025-05-01T00:00:00Z",
+      "date_end": "2025-05-15T23:59:59Z",
+      "percent": 15.0,
+      "course_id": "course006"
+    }
+  ]
+  

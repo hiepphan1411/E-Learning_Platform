@@ -4,10 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev-client": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "client": "npm run dev-client",
+    "server": "node server.js",
+    "dev": "concurrently \"npm run client\" \"npm run server\""
   },
   "dependencies": {
     "react": "^19.0.0",
