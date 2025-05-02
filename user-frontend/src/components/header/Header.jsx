@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import CustomButton from "../button/CustomButtom";
-import "./Navbar.css";
-import { useState } from "react";
-import SignInModal from "../modal/SignInModal";
+import "./Header.css";
 import UserInfo from "../userinfo/UserInfo";
 
 const NavbarMenu = [
@@ -33,15 +31,7 @@ const NavbarMenu = [
   },
 ];
 
-function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  console.log(isModalOpen);
-
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
-
+function Header() {
   return (
     <nav className="relative z-20 flex items-center justify-between px-14 py-10">
       <img src="../logo.png" alt="Logo Higi" className="h-12"></img>
@@ -55,18 +45,11 @@ function Navbar() {
             </Link>
           ))}
         </ul>
-        {isLoggedIn ? (
-          <UserInfo image={"./PPH.jpg"} name={"Phan Phước Hiệp"} />
-        ) : (
-          <CustomButton
-            title={"Sign in"}
-            onClick={handleOpenModal}
-          ></CustomButton>
-        )}
+        <CustomButton title={"Sign in"}></CustomButton>
+        <UserInfo />
       </div>
-      <SignInModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </nav>
   );
 }
 
-export default Navbar;
+export default Header;

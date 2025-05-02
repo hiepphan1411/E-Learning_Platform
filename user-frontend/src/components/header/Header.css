@@ -1,0 +1,25 @@
+.navlink-header {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navlink-header:hover {
+  color: #319795;
+}
+
+.navlink-header::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 5px;
+  height: 5px;
+  background-color: #319795;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.navlink-header:hover::after {
+  transform: translateX(-50%) scale(1);
+}

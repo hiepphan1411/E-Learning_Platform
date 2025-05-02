@@ -1,6 +1,13 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckIcon } from "lucide-react";
+import {
+  CheckIcon,
+  Youtube,
+  Instagram,
+  Github,
+  Linkedin,
+  Facebook,
+} from "lucide-react";
 
 function SignInModal({ isOpen, onClose }) {
   const handleBackdropClick = (e) => {
@@ -100,16 +107,39 @@ function SignInModal({ isOpen, onClose }) {
                 </span>{" "}
                 của HiGi
               </div>
-              <div>
-                <p>Hoặc bạn có thể kết nối với chúng tôi thông qua</p>
+              <div className="flex flex-col items-center justify-center w-full mt-4">
+                <div className="flex items-center w-full">
+                  <div className="flex-grow h-px bg-black"></div>
+                  <span className="px-2 whitespace-nowrap">
+                    Hoặc bạn có thể kết nối với chúng tôi thông qua
+                  </span>
+                  <div className="flex-grow h-px bg-black"></div>
+                </div>
+                <div className="flex w-full items-center justify-around mt-4 gap-4">
+                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
+                    <Facebook strokeWidth={0.75} className="h-12 w-8" />
+                  </button>
+                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
+                    <Github strokeWidth={0.75} className="h-12 w-8" />
+                  </button>
+                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
+                    <Linkedin strokeWidth={0.75} className="h-12 w-8" />
+                  </button>
+                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
+                    <Instagram strokeWidth={0.75} className="h-12 w-8" />
+                  </button>
+                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
+                    <Youtube strokeWidth={0.75} className="h-12 w-8" />
+                  </button>
+                </div>
               </div>
             </form>
-            <button
-              onClick={onClose}
-              className="mt-4 text-teal-600 hover:underline"
-            >
-              Close
-            </button>
+            <div className="flex w-full items-center justify-center gap-1 mt-16">
+              Bạn đã có tài khoản?{" "}
+              <span className="text-teal-400 cursor-pointer hover:underline">
+                Đăng nhập
+              </span>
+            </div>
           </motion.div>
         </motion.div>
       )}
