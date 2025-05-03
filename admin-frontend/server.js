@@ -16,40 +16,74 @@ mongoose.connect(
 const courseSchema = new mongoose.Schema({}, { strict: false });
 const Course = mongoose.model("Course", courseSchema); 
 
-app.get("/api/courses", async (req, res) => {
-  try {
-    const courses = await Course.find();
-    res.json(courses);
-  } catch (err) {
-    console.error("Error occurred while fetching courses:", err);
-    res.status(500).json({ error: "Something went wrong" });
-  }
-});
-
-app.put("/api/courses/:id", async (req, res) => {
-  const { id } = req.params;
-  const updatedData = req.body;
+app.get("/api/all-data/:collectionName", async (req, res) => {
+  const { collectionName } = req.params;
 
   try {
-    const updatedCourse = await Course.findByIdAndUpdate(id, updatedData, {
-      new: true,
-    });
-
-    if (!updatedCourse) {
-      return res.status(404).json({ error: "Course not found" });
-    }
-
-    res.json(updatedCourse);
+    const data = await mongoose.connection.db.collection(collectionName).find().toArray();
+    res.json(data);
   } catch (err) {
-    console.error("Error updating course:", err);
+    console.error(`Error fetching data from collection ${collectionName}:`, err);
     res.status(500).json({ error: "Server error" });
   }
 });
-app.delete("/api/courses/:id", async (req, res) => {
-  const { id } = req.params;
+
+app.get("/api/all-data/:collectionName/by/:fieldName/:value", async (req, res) => {
+  const { collectionName, fieldName, value } = req.params;
 
   try {
-    const deletedCourse = await Course.findByIdAndDelete(id);
+    const collection = mongoose.connection.db.collection(collectionName);
+
+    const query = { [fieldName]: value };
+
+    const document = await collection.findOne(query);
+
+    if (!document) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    res.json(document);
+  } catch (err) {
+    console.error(`Error querying ${collectionName} by ${fieldName}:`, err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.put("/api/all-data/:collectionName/by/:fieldName/:value", async (req, res) => {
+  const { collectionName, fieldName, value } = req.params;
+  const updateData = req.body;
+
+  try {
+    const collection = mongoose.connection.db.collection(collectionName);
+
+    const query = { [fieldName]: value };
+    
+    const result = await collection.updateOne(
+      query, 
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    const updatedDocument = await collection.findOne(query);
+
+    res.json({ 
+      message: `Document in ${collectionName} updated successfully`, 
+      document: updatedDocument 
+    });
+  } catch (err) {
+    console.error(`Error updating document in ${collectionName} by ${fieldName}:`, err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.delete("/api/courses/by-course-id/:courseId", async (req, res) => {
+  const { courseId } = req.params;  
+
+  try {
+    const deletedCourse = await Course.findByIdAndDelete(courseId);
 
     if (!deletedCourse) {
       return res.status(404).json({ error: "Course not found" });

@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useTitle } from "../../hooks/TitleProvider";
 import Header from "../commons/Header";
 import Sidebar from "../commons/Sidebar";
+import { useEffect } from "react";
 
 export default function Layout() {
   const { title } = useTitle();
