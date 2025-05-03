@@ -79,19 +79,25 @@ app.put("/api/all-data/:collectionName/by/:fieldName/:value", async (req, res) =
   }
 });
 
-app.delete("/api/courses/by-course-id/:courseId", async (req, res) => {
-  const { courseId } = req.params;  
+app.delete("/api/all-data/:collectionName/by/:fieldName/:value", async (req, res) => {
+  const { collectionName, fieldName, value } = req.params;
 
   try {
-    const deletedCourse = await Course.findByIdAndDelete(courseId);
+    const collection = mongoose.connection.db.collection(collectionName);
 
-    if (!deletedCourse) {
-      return res.status(404).json({ error: "Course not found" });
+    const query = { [fieldName]: value };
+    
+    const result = await collection.deleteOne(query);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Document not found" });
     }
 
-    res.json({ message: "Course deleted successfully" });
+    res.json({ 
+      message: `Document in ${collectionName} deleted successfully`
+    });
   } catch (err) {
-    console.error("Error deleting course:", err);
+    console.error(`Error deleting document in ${collectionName} by ${fieldName}:`, err);
     res.status(500).json({ error: "Server error" });
   }
 });

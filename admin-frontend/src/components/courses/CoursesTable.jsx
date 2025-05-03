@@ -48,7 +48,7 @@ const scrollbarStyle = `
   }
 `;
 
-const CoursesTable = ({courses = []}) => {
+const CoursesTable = ({courses = [], onCoursesUpdate}) => {
   useEffect(() => {
     const styleElement = document.createElement("style");
     styleElement.textContent = scrollbarStyle;
@@ -160,6 +160,9 @@ const CoursesTable = ({courses = []}) => {
     }
 
     setFilteredCourses(result);
+    
+    // Reset to first page when filters change
+    setCurrentPage(1);
   }, [searchTerm, sortOption, alphabetOption, courses]);
 
   // Tính giá trị mỗi trang
@@ -227,6 +230,9 @@ const CoursesTable = ({courses = []}) => {
   const handleSaveChanges = () => {
     if (!selectedCourse) return;
 
+    // Store the previous status for comparison
+    const previousStatus = courses.find(c => c.id === selectedCourse.id)?.statusbar;
+
     // Tạo payload
     const payload = {
       name: selectedCourse.name,
@@ -258,6 +264,25 @@ const CoursesTable = ({courses = []}) => {
         console.log("Course updated successfully:", response.data);
 
         const updatedData = mapApiResponseToCourse(response.data);
+        const updatedCourses = courses.map(course => 
+          course.id === courseId ? updatedData : course
+        );
+
+        if (onCoursesUpdate) {
+          onCoursesUpdate(updatedCourses);
+        }
+
+        setFilteredCourses(prevFiltered => {
+          if (previousStatus !== updatedData.statusbar && 
+              sortOption !== "Tất cả" && 
+              sortOption !== updatedData.statusbar) {
+            return prevFiltered.filter(course => course.id !== courseId);
+          } else {
+            return prevFiltered.map(course => 
+              course.id === courseId ? updatedData : course
+            );
+          }
+        });
         
         handleCloseModal();
         showNotification("success", "Cập nhật khóa học thành công!");
@@ -318,7 +343,24 @@ const CoursesTable = ({courses = []}) => {
       )
       .then((response) => {
         console.log("Course approved:", response.data);
-        // Let parent component handle the update
+        const updatedCourses = courses.map(course => 
+          course.id === courseId ? {...course, statusbar: "Đã duyệt"} : course
+        );
+        
+        if (onCoursesUpdate) {
+          onCoursesUpdate(updatedCourses);
+        }
+        
+        setFilteredCourses(prevFiltered => {
+          if (sortOption === "Đã duyệt" || sortOption === "Tất cả") {
+            return prevFiltered.map(course => 
+              course.id === courseId ? {...course, statusbar: "Đã duyệt"} : course
+            );
+          } else {
+            return prevFiltered.filter(course => course.id !== courseId);
+          }
+        });
+        
         setIsLoading(false);
         showNotification("success", "Khóa học đã được duyệt thành công!");
       })
@@ -340,19 +382,26 @@ const CoursesTable = ({courses = []}) => {
     setCourseToDelete(null);
   };
 
-  //Xóa khóa học (Chưa làm xong)
+  //Xóa khóa học
   const handleDeleteCourse = () => {
     if (!courseToDelete) return;
 
     const courseId = courseToDelete.id;
 
     setIsLoading(true);
-    console.log("Deleting course with ID:", courseId);
     axios
       .delete(`http://localhost:5000/api/all-data/courses/by/id/${courseId}`)
       .then((response) => {
-        console.log("Course deleted:", response.data);
-        // Let parent component handle the update
+        const updatedCourses = courses.filter(course => course.id !== courseId);
+
+        if (onCoursesUpdate) {
+          onCoursesUpdate(updatedCourses);
+        }
+        
+        setFilteredCourses(prevFiltered => 
+          prevFiltered.filter(course => course.id !== courseId)
+        );
+        
         setIsLoading(false);
         showNotification("success", "Xóa khóa học thành công!");
       })
@@ -576,7 +625,7 @@ const CoursesTable = ({courses = []}) => {
                       >
                         <Trash2 size={18} />
                       </button>
-                      {course.statusbar !== "Đã duyệt" && (
+                      {course.statusbar !== "Đã duyệt" && course.statusbar != "Vi phạm" && (
                         <button
                           className="text-green-400 hover:text-green-300 ml-2"
                           onClick={() => handleApprove(course.id)}
@@ -592,7 +641,6 @@ const CoursesTable = ({courses = []}) => {
             </table>
           </div>
 
-          {/* Pagination - Now using flex layout and mt-auto to push it to bottom */}
           <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-700 text-gray-300">
             <div>
               Hiển thị {indexOfFirstCourse + 1}-

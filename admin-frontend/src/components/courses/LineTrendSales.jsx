@@ -32,20 +32,15 @@ const LineTrendSales = () => {
       });
   }, []);
   
-  // Process sales data from user courses
   const processSalesData = (courses) => {
-    // Group purchases by month for the current year only
     const salesByMonth = courses.reduce((acc, course) => {
-      // Extract month and year from date_of_purchase
       const purchaseDate = new Date(course.date_of_purchase);
       const year = purchaseDate.getFullYear();
       
-      // Only include data from the current year
       if (year === currentYear) {
-        const monthIndex = purchaseDate.getMonth(); // Get month as number (0-11)
+        const monthIndex = purchaseDate.getMonth(); 
         const month = purchaseDate.toLocaleString('default', { month: 'short' });
         
-        // Add price to the corresponding month
         if (!acc[monthIndex]) {
           acc[monthIndex] = { month, sales: 0 };
         }
@@ -54,7 +49,6 @@ const LineTrendSales = () => {
       return acc;
     }, {});
     
-    // Convert to array format for chart and ensure chronological order
     const chartData = Object.keys(salesByMonth)
       .map(monthIndex => salesByMonth[monthIndex])
       .sort((a, b) => {
