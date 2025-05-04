@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
     // Fetch dữ liệu từ API
     useEffect(() => {
       fetch("http://localhost:5000/api/all-data/courses")
@@ -45,11 +46,12 @@ const CoursesPage = () => {
   
             _original: course,
           }));
-          console.log("Formatted data:", formattedData);
           setCourses(formattedData);
+          setLoading(false);
         })
         .catch((err) => {
           console.error("fetch() error:", err);
+          setLoading(false);
         });
     }, []);
 
@@ -71,46 +73,55 @@ const CoursesPage = () => {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
-        {/* STATS */}
-        <motion.div
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <StatCard
-            name="Tổng số khóa học"
-            icon={Package}
-            value={totalCourses}
-            color="#6366F1"
-          />
-          <StatCard
-            name="Số khóa học nổi bật"
-            icon={TrendingUp}
-            value={outstandingCourses}
-            color="#10B981"
-          />
-          <StatCard
-            name="Số khóa học vi phạm"
-            icon={AlertTriangle}
-            value={violatedCourses}
-            color="#F59E0B"
-          />
-          <StatCard
-            name="Tổng chi phí"
-            icon={DollarSign}
-            value={formatPrice(totalPrice)}
-            color="#EF4444"
-          />
-        </motion.div>
-
-        <CoursesTable courses={courses} />
-
-        {/* CHARTS */}
-        <div className="grid grid-col-1 lg:grid-cols-2 gap-8 z-10">
-          <LineTrendSales />
-          <PieCategoryCourse courses={courses}/>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          <p className="ml-4 text-lg font-medium text-gray-700">Đang tải dữ liệu...</p>
         </div>
+      ) : (
+        <>
+          {/* STATS */}
+          <motion.div
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <StatCard
+              name="Tổng số khóa học"
+              icon={Package}
+              value={totalCourses}
+              color="#6366F1"
+            />
+            <StatCard
+              name="Số khóa học nổi bật"
+              icon={TrendingUp}
+              value={outstandingCourses}
+              color="#10B981"
+            />
+            <StatCard
+              name="Số khóa học vi phạm"
+              icon={AlertTriangle}
+              value={violatedCourses}
+              color="#F59E0B"
+            />
+            <StatCard
+              name="Tổng chi phí"
+              icon={DollarSign}
+              value={formatPrice(totalPrice)}
+              color="#EF4444"
+            />
+          </motion.div>
+
+          <CoursesTable courses={courses} />
+
+          {/* CHARTS */}
+          <div className="grid grid-col-1 lg:grid-cols-2 gap-8 z-10">
+            <LineTrendSales />
+            <PieCategoryCourse courses={courses}/>
+          </div>
+        </>
+      )}
       </main>
     </div>
   );

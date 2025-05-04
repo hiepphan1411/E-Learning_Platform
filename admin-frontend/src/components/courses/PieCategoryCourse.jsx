@@ -6,7 +6,7 @@ const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 export default function PieCategoryCourse({ courses }) {
 
     const categoryData = courses.reduce((acc, course) => {
-        const categoryName = course.category ? (typeof course.category === "object" ? course.category.name : course.category) : "Khác";
+        const categoryName = course.category ? (typeof course.category === "object" ? course.category.name : course.category.split(' - ')[0]) : "Khác";
         const existingCategory = acc.find(item => item.name === categoryName);
         if (existingCategory) {
             existingCategory.value += 1;

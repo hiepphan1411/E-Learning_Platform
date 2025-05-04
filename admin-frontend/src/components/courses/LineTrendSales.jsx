@@ -13,7 +13,7 @@ import {
 
 const LineTrendSales = () => {
   const [salesData, setSalesData] = useState([]);
-  const currentYear = new Date().getFullYear(); // Get current year
+  const currentYear = new Date().getFullYear(); 
   
   // Fetch dữ liệu từ API
   useEffect(() => {

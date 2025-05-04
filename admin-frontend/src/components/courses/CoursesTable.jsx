@@ -94,6 +94,7 @@ const CoursesTable = ({courses = [], onCoursesUpdate}) => {
     );
   };
 
+  //Chuyển đổi Base64 thành URL
   const getImageSrc = (image) => {
     console.log(image);
     if (!image) return "../avatarAdmin.png";
@@ -229,8 +230,6 @@ const CoursesTable = ({courses = [], onCoursesUpdate}) => {
 
   const handleSaveChanges = () => {
     if (!selectedCourse) return;
-
-    // Store the previous status for comparison
     const previousStatus = courses.find(c => c.id === selectedCourse.id)?.statusbar;
 
     // Tạo payload

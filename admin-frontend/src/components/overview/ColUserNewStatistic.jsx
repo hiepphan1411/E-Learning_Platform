@@ -1,18 +1,38 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from "recharts";
+import { useMemo } from "react";
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 
-const SALES_CHANNEL_DATA = [
-	{ name: "Tháng 1", value: 45600 },
-	{ name: "Tháng 2", value: 38200 },
-	{ name: "Tháng 3", value: 29800 },
-	{ name: "Tháng 4", value: 18700 },
-    { name: "Tháng 5", value: 15000 }
-];
-
-const ColUserNewStatistic = () => {
-    console.log("ColUserNewStatistic render");
+const ColUserNewStatistic = ({users}) => {
+    const monthlyUserData = useMemo(() => {
+        if (!users || users.length === 0) {
+            return [];
+        }
+        
+        const monthCounts = {};
+        const months = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", 
+                        "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", 
+                        "Tháng 11", "Tháng 12"];
+        
+        months.forEach(month => {
+            monthCounts[month] = 0;
+        });
+        
+        users.forEach(user => {
+            const createdAt = new Date(user.createdAt);
+            const monthIndex = createdAt.getMonth(); 
+            const monthName = months[monthIndex];
+            monthCounts[monthName]++;
+        });
+      
+        return Object.keys(monthCounts)
+            .filter(month => monthCounts[month] > 0)
+            .map(month => ({
+                name: month,
+                value: monthCounts[month]
+            }));
+    }, [users]);
     
   return (
     <motion.div
@@ -27,7 +47,7 @@ const ColUserNewStatistic = () => {
 
       <div className="h-80">
         <ResponsiveContainer>
-          <BarChart data={SALES_CHANNEL_DATA}>
+          <BarChart data={monthlyUserData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
             <XAxis dataKey="name" stroke="#9CA3AF" />
             <YAxis stroke="#9CA3AF" />
@@ -37,10 +57,11 @@ const ColUserNewStatistic = () => {
                 borderColor: "#4B5563",
               }}
               itemStyle={{ color: "#E5E7EB" }}
+              formatter={(value) => [`${value} người dùng`, "Số lượng"]}
             />
             <Legend />
-            <Bar dataKey={"value"} fill="#8884d8">
-              {SALES_CHANNEL_DATA.map((entry, index) => (
+            <Bar dataKey="value" name="Số người dùng mới" fill="#8884d8">
+              {monthlyUserData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
