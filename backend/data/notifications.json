@@ -1,0 +1,38 @@
+[
+    {
+      "userId": "user001",
+      "message": "Bạn có một yêu cầu duyệt khóa học mới",
+      "type": "user",
+      "createdAt": { "$date": "2025-05-02T08:00:00Z" },
+      "read": false
+    },
+    {
+      "userId": "user002",
+      "message": "Yêu cầu duyệt chứng chỉ cho khóa học: course001",
+      "type": "course",
+      "createdAt": { "$date": "2025-05-02T08:15:00Z" },
+      "read": false
+    },
+    {
+      "userId": "user003",
+      "message": "Yêu cầu duyệt chứng chỉ cho khóa học: course002",
+      "type": "request",
+      "createdAt": { "$date": "2025-05-02T08:30:00Z" },
+      "read": true
+    },
+    {
+      "message": "Tài khoản user001 có dấu hiệu bất thường",
+    "userId": "user001",
+      "type": "report",
+      "createdAt": { "$date": "2025-05-02T09:00:00Z" },
+      "read": false
+    },
+    {
+      "userId": "user001",
+      "message": "Hệ thống sẽ bảo trì lúc 22:00",
+      "type": "system",
+      "createdAt": { "$date": "2025-05-02T07:00:00Z" },
+      "read": true
+    }
+  ]
+  

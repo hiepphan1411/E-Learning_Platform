@@ -1,8 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { useTitle } from "../../hooks/TitleProvider";
+import { AuthContext } from "../../App";
 
 const PopupMenu = () => {
     const { setTitle } = useTitle();
+    const { handleLogout } = useContext(AuthContext);
+    const navigate = useNavigate();
+    
+    const handleLogoutClick = () => {
+      handleLogout();
+      navigate('/login');
+    };
+    
   return (
     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
       <Link 
@@ -34,6 +44,7 @@ const PopupMenu = () => {
       <a
         href="#"
         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+        onClick={handleLogoutClick}
       >
         <svg
           className="w-5 h-5 mr-2"

@@ -40,7 +40,7 @@ export default function UsersPage() {
           createdAt: user.account?.createAt ? new Date(user.account.createAt).toISOString().split("T")[0] : "N/A",
           source: user.account?.To || "Direct",
           typeUser: user.typeUser || "Học viên",
-          status: user.status || "Chờ xác nhận",
+          status: user.status || "N/A",
           avatar: user.avatarData || "../avatarAdmin.png",
           _original: user,
         }));

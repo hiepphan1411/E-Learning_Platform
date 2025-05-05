@@ -35,7 +35,7 @@ export default function UsersTable({ users: initialUsers }) {
   const usersPerPage = 10;
 
   const statusOptions = ["Hoạt động", "Vô hiệu hóa"];
-  const accountTypes = ["Tất cả", "Quản trị viên", "Giảng viên", "Học viên"];
+  const accountTypes = ["Tất cả", "Quản trị viên", "Giáo viên", "Học viên"];
   const statusFilterOptions = ["Tất cả", "Hoạt động", "Vô hiệu hóa"];
 
   useEffect(() => {
@@ -183,9 +183,14 @@ export default function UsersTable({ users: initialUsers }) {
       if (response.data && response.data.document) {
         const updatedData = response.data.document;
         
-        // Update both users and filteredUsers arrays
+        const originalUser = users.find(u => u.id === userId);
+        const mergedData = {
+          ...updatedData,
+          avatar: updatedData.avatar || originalUser.avatar
+        };
+        
         setUsers(prevUsers => 
-          prevUsers.map(user => user.id === userId ? updatedData : user)
+          prevUsers.map(user => user.id === userId ? mergedData : user)
         );
         
         setFilteredUsers(prevFiltered => {
@@ -237,7 +242,6 @@ export default function UsersTable({ users: initialUsers }) {
       );
 
       if (response.data && response.data.message) {
-        // Update both arrays when a user is deleted
         setUsers(prevUsers => prevUsers.filter(user => user.id !== userToDelete.id));
         setFilteredUsers(prevFiltered => prevFiltered.filter(user => user.id !== userToDelete.id));
         handleCloseDeleteModal();
@@ -612,13 +616,14 @@ export default function UsersTable({ users: initialUsers }) {
                   Role
                 </label>
                 <select
-                  name="role"
-                  value={selectedUser.role}
+                  name="typeUser"
+                  value={selectedUser.typeUser}
                   onChange={handleInputChange}
                   className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Admin">Admin</option>
-                  <option value="User">User</option>
+                  <option value="Quản trị viên">Quản trị viên</option>
+                  <option value="Giáo viên">Giáo viên</option>
+                  <option value="Học viên">Học viên</option>
                 </select>
               </div>
 
@@ -633,7 +638,7 @@ export default function UsersTable({ users: initialUsers }) {
                       onClick={() => handleStatusChange(status)}
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         selectedUser.status === status
-                          ? status === "Active"
+                          ? status === "Hoạt động"
                             ? "bg-green-500 text-white"
                             : "bg-red-500 text-white"
                           : "bg-gray-600 text-gray-300"

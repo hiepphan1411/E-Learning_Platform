@@ -1,23 +1,69 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Eye, Delete, Bell, AlertCircle, UserPlus, BookOpen, FileText, RefreshCw } from "lucide-react";
 import PopupMenu from './PopupMenu';
+import io from 'socket.io-client';
+import { formatDistanceToNow } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 const Header = ({title}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
+  const socketRef = useRef(null);
   
-  // Thông báo mẫu
-  const [notifications, setNotifications] = useState([
-    { id: 1, message: "Người dùng mới đã đăng ký", time: "5 phút trước", read: false, type: "user" },
-    { id: 2, message: "Khóa học 'React Basics' đã được tạo", time: "1 giờ trước", read: false, type: "course" },
-    { id: 3, message: "Yêu cầu xác nhận khóa học mới", time: "3 giờ trước", read: false, type: "request" },
-    { id: 4, message: "Báo cáo doanh thu tháng đã sẵn sàng", time: "1 ngày trước", read: true, type: "report" },
-    { id: 5, message: "Cập nhật hệ thống sẽ diễn ra vào ngày mai", time: "2 ngày trước", read: true, type: "system" }
-  ]);
 
-  // đóng mở cửa sổ thông báo
+  useEffect(() => {
+    socketRef.current = io('http://localhost:5000');
+    
+    socketRef.current.on('new_notification', (notification) => {
+      setNotifications(prev => {
+        return [formatNotification(notification), ...prev];
+      });
+    });
+    
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  const formatNotification = (notification) => {
+    const createdAt = notification.createdAt?.$date 
+      ? new Date(notification.createdAt.$date) 
+      : new Date(notification.createdAt || Date.now());
+
+    return {
+      id: notification._id || notification.id,
+      message: notification.message,
+      time: formatDistanceToNow(createdAt, { addSuffix: true, locale: vi }),
+      read: notification.read || false,
+      type: notification.type || 'system',
+      createdAt: createdAt
+    };
+  };
+
+  // Fetch thông báo ban đầu
+  useEffect(() => {
+    fetch("http://localhost:5000/api/all-data/notifications")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const formattedNotifications = data.map(formatNotification)
+          .sort((a, b) => b.createdAt - a.createdAt);
+        setNotifications(formattedNotifications);
+      })
+      .catch((error) => {
+        console.error("Error fetching notifications:", error);
+      });
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -46,14 +92,29 @@ const Header = ({title}) => {
     setNotifications(notifications.map(notification => 
       notification.id === id ? {...notification, read: true} : notification
     ));
+
+    fetch(`http://localhost:5000/api/all-data/notifications/by/_id/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ read: true })
+    }).catch(err => console.error('Error marking notification as read:', err));
   };
   
   const deleteNotification = (id) => {
     setNotifications(notifications.filter(notification => notification.id !== id));
+    fetch(`http://localhost:5000/api/notifications/by/id/${id}`, {
+      method: 'DELETE'
+    }).catch(err => console.error('Error deleting notification:', err));
   };
   
   const deleteAllNotifications = () => {
     setNotifications([]);
+    
+    fetch(`http://localhost:5000/api/notifications/delete-all`, {
+      method: 'DELETE'
+    }).catch(err => console.error('Error deleting all notifications:', err));
   };
 
   const getNotificationIcon = (type) => {
@@ -84,7 +145,7 @@ const Header = ({title}) => {
         <div className="text-white text-xl ml-8 w-10">{title}</div>
       </div>
 
-      <div className="flex-1 max-w-lg mx-6">
+      {/* <div className="flex-1 max-w-lg mx-6">
         <div className="relative">
           <input 
             type="text" 
@@ -97,7 +158,7 @@ const Header = ({title}) => {
             </svg>
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex items-center">
         <div className="relative mr-4" ref={notificationsRef}>

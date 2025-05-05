@@ -877,7 +877,7 @@ const CoursesTable = ({courses = [], onCoursesUpdate}) => {
                       />
                       <span className="text-gray-300 text-sm">
                         {isBase64Image(selectedCourse.image)
-                          ? "Hình ảnh Base64"
+                          ? "Ảnh bìa"
                           : "Hình ảnh URL"}
                       </span>
                     </div>
