@@ -8,6 +8,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const { handleLogin } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:5000/api/all-data/users") 
@@ -35,9 +36,6 @@ const Login = () => {
           _original: user,
         }));
         setUsers(formattedData);
-        
-
-        
       })
       .catch((err) => {
         console.error("fetch() error:", err);
@@ -56,17 +54,32 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError("");
     
-    if (rememberMe) {
-      localStorage.setItem("adminEmail", email);
-      localStorage.setItem("adminRememberMe", "true");
+    const user = users.find(
+      (user) => user.email === email && user.pass === password
+    );
+    console.log("User found:", user);
+    if (user) {
+      if (user.typeUser === "Quản trị viên") {
+        if (rememberMe) {
+          localStorage.setItem("adminEmail", email);
+          localStorage.setItem("adminRememberMe", "true");
+          localStorage.setItem("adminUserData", JSON.stringify(user));
+        } else {
+          localStorage.removeItem("adminEmail");
+          localStorage.removeItem("adminRememberMe");
+
+          sessionStorage.setItem("adminUserData", JSON.stringify(user));
+        }
+        
+        handleLogin(user);
+      } else {
+        setError("Bạn không có quyền truy cập vào trang quản trị");
+      }
     } else {
-      localStorage.removeItem("adminEmail");
-      localStorage.removeItem("adminRememberMe");
+      setError("Email hoặc mật khẩu không chính xác");
     }
-    
-    handleLogin();
-    console.log({ email, password, rememberMe });
   };
 
   return (
@@ -106,6 +119,11 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="bg-red-500 text-white p-2 rounded">
+                  {error}
+                </div>
+              )}
               <div>
                 <input
                   type="email"

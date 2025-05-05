@@ -16,18 +16,21 @@ export const AuthContext = createContext(null);
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userData, setUserData] = useState(null);
 
-  const handleLogin = () => {
+  const handleLogin = (user) => {
     setIsAuthenticated(true);
+    setUserData(user);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setUserData(null);
   };
 
   return (
     <BrowserRouter>
-      <AuthContext.Provider value={{ isAuthenticated, handleLogin, handleLogout }}>
+      <AuthContext.Provider value={{ isAuthenticated, userData, handleLogin, handleLogout }}>
         <TitleProvider>
           <Routes>
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />

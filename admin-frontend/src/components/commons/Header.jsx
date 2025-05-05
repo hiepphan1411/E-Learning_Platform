@@ -1,13 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Eye, Delete, Bell, AlertCircle, UserPlus, BookOpen, FileText, RefreshCw } from "lucide-react";
-import PopupMenu from './PopupMenu';
-import io from 'socket.io-client';
-import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useContext } from "react";
+import {
+  Eye,
+  Delete,
+  Bell,
+  AlertCircle,
+  UserPlus,
+  BookOpen,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
+import PopupMenu from "./PopupMenu";
+import io from "socket.io-client";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../App";
 
-const Header = ({title}) => {
+const Header = ({ title }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -15,27 +25,51 @@ const Header = ({title}) => {
   const notificationsRef = useRef(null);
   const socketRef = useRef(null);
   const navigate = useNavigate();
-  
+  const { userData } = useContext(AuthContext);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:5000');
-    
-    socketRef.current.on('new_notification', (notification) => {
-      setNotifications(prev => {
+    socketRef.current = io("http://localhost:5000");
+
+    socketRef.current.on("new_notification", (notification) => {
+      setNotifications((prev) => {
         return [formatNotification(notification), ...prev];
       });
     });
-    
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
   }, []);
+  // Kiểm tra xem chuỗi có phải là Base64 hay không
+  const isBase64Image = (src) => {
+    return (
+      src &&
+      (src.startsWith("data:image") ||
+        src.startsWith("data:application/octet-stream;base64") ||
+        (src.length > 100 && /^[A-Za-z0-9+/=]+$/.test(src)))
+    );
+  };
 
+  //Chuyển đổi Base64 thành URL
+  const getImageSrc = (image) => {
+    console.log(image);
+    if (!image) return "../avatarAdmin.png";
+
+    if (isBase64Image(image)) {
+      if (image.startsWith("data:")) {
+        return image;
+      }
+      console.log(image);
+      return `data:image/jpeg;base64,${image}`;
+    }
+
+    return image;
+  };
   const formatNotification = (notification) => {
-    const createdAt = notification.createdAt?.$date 
-      ? new Date(notification.createdAt.$date) 
+    const createdAt = notification.createdAt?.$date
+      ? new Date(notification.createdAt.$date)
       : new Date(notification.createdAt || Date.now());
 
     return {
@@ -43,8 +77,8 @@ const Header = ({title}) => {
       message: notification.message,
       time: formatDistanceToNow(createdAt, { addSuffix: true, locale: vi }),
       read: notification.read || false,
-      type: notification.type || 'system',
-      createdAt: createdAt
+      type: notification.type || "system",
+      createdAt: createdAt,
     };
   };
 
@@ -58,7 +92,8 @@ const Header = ({title}) => {
         return res.json();
       })
       .then((data) => {
-        const formattedNotifications = data.map(formatNotification)
+        const formattedNotifications = data
+          .map(formatNotification)
           .sort((a, b) => b.createdAt - a.createdAt);
         setNotifications(formattedNotifications);
       })
@@ -72,72 +107,83 @@ const Header = ({title}) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
-      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
         setNotificationsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
-  
+
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
   };
-  
+
   const markAsRead = (id) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? {...notification, read: true} : notification
-    ));
+    setNotifications(
+      notifications.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
 
     fetch(`http://localhost:5000/api/all-data/notifications/by/_id/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ read: true })
-    }).catch(err => console.error('Error marking notification as read:', err));
+      body: JSON.stringify({ read: true }),
+    }).catch((err) =>
+      console.error("Error marking notification as read:", err)
+    );
   };
-  
+
   const deleteNotification = (id) => {
-    setNotifications(notifications.filter(notification => notification.id !== id));
+    setNotifications(
+      notifications.filter((notification) => notification.id !== id)
+    );
     fetch(`http://localhost:5000/api/notifications/by/id/${id}`, {
-      method: 'DELETE'
-    }).catch(err => console.error('Error deleting notification:', err));
+      method: "DELETE",
+    }).catch((err) => console.error("Error deleting notification:", err));
   };
-  
+
   const deleteAllNotifications = () => {
     setNotifications([]);
-    
+
     fetch(`http://localhost:5000/api/notifications/delete-all`, {
-      method: 'DELETE'
-    }).catch(err => console.error('Error deleting all notifications:', err));
+      method: "DELETE",
+    }).catch((err) => console.error("Error deleting all notifications:", err));
   };
 
   const getNotificationIcon = (type) => {
-    switch(type) {
-      case 'user':
+    switch (type) {
+      case "user":
         return <UserPlus size={16} className="text-blue-400" />;
-      case 'course':
+      case "course":
         return <BookOpen size={16} className="text-green-400" />;
-      case 'request':
+      case "request":
         return <AlertCircle size={16} className="text-yellow-400" />;
-      case 'report':
+      case "report":
         return <FileText size={16} className="text-purple-400" />;
-      case 'system':
+      case "system":
         return <RefreshCw size={16} className="text-red-400" />;
       default:
         return <Bell size={16} className="text-gray-400" />;
     }
   };
-  
-  const unreadCount = notifications.filter(notification => !notification.read).length;
+
+  const unreadCount = notifications.filter(
+    (notification) => !notification.read
+  ).length;
 
   const handleLogout = () => {
     toast.success("Đăng xuất thành công!", {
@@ -149,9 +195,9 @@ const Header = ({title}) => {
       draggable: true,
     });
 
-    localStorage.removeItem('adminToken');
+    localStorage.removeItem("adminToken");
     setTimeout(() => {
-      navigate('/login');
+      navigate("/login");
     }, 2000);
   };
 
@@ -181,18 +227,23 @@ const Header = ({title}) => {
 
       <div className="flex items-center">
         <div className="relative mr-4" ref={notificationsRef}>
-          <button className="text-white p-2 rounded-full hover:bg-gray-700 transition-colors duration-200" onClick={toggleNotifications}>
-            {unreadCount > 0 && 
+          <button
+            className="text-white p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
+            onClick={toggleNotifications}
+          >
+            {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-blue-500 text-xs w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-800 animate-pulse">
                 {unreadCount}
               </span>
-            }
+            )}
             <Bell className="w-5 h-5" />
           </button>
           {/* Cửa sổ thông báo */}
           {notificationsOpen && (
-            <div className="absolute right-0 mt-2 rounded-md shadow-lg py-1 z-50 w-96 bg-gray-800 border border-gray-700 transition-all duration-300 ease-in-out transform origin-top-right" 
-                 style={{boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)'}}>
+            <div
+              className="absolute right-0 mt-2 rounded-md shadow-lg py-1 z-50 w-96 bg-gray-800 border border-gray-700 transition-all duration-300 ease-in-out transform origin-top-right"
+              style={{ boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)" }}
+            >
               <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white flex items-center">
                   <Bell className="w-5 h-5 mr-2 text-blue-400" />
@@ -204,28 +255,33 @@ const Header = ({title}) => {
                   )}
                 </h3>
               </div>
-              
-              <div 
-                className="max-h-80 overflow-y-auto custom-scrollbar" 
-                style={{scrollbarWidth: 'thin', scrollbarColor: '#4B5563 #1F2937'}}
+
+              <div
+                className="max-h-80 overflow-y-auto custom-scrollbar"
+                style={{
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "#4B5563 #1F2937",
+                }}
               >
                 <style jsx>{`
                   .custom-scrollbar::-webkit-scrollbar {
                     width: 6px;
                   }
                   .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #1F2937;
+                    background: #1f2937;
                   }
                   .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background-color: #4B5563;
+                    background-color: #4b5563;
                     border-radius: 6px;
                   }
                 `}</style>
                 {notifications.length > 0 ? (
-                  notifications.map(notification => (
-                    <div 
-                      key={notification.id} 
-                      className={`px-4 py-3 border-b border-gray-700 hover:bg-gray-700 transition-colors duration-200 ${!notification.read ? 'bg-gray-700 bg-opacity-40' : ''}`}
+                  notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`px-4 py-3 border-b border-gray-700 hover:bg-gray-700 transition-colors duration-200 ${
+                        !notification.read ? "bg-gray-700 bg-opacity-40" : ""
+                      }`}
                     >
                       <div className="flex">
                         <div className="mr-3 mt-1">
@@ -233,15 +289,23 @@ const Header = ({title}) => {
                         </div>
                         <div className="flex-grow">
                           <div className="flex justify-between">
-                            <p className={`text-sm ${!notification.read ? 'font-semibold text-white' : 'text-gray-300'}`}>
+                            <p
+                              className={`text-sm ${
+                                !notification.read
+                                  ? "font-semibold text-white"
+                                  : "text-gray-300"
+                              }`}
+                            >
                               {notification.message}
                             </p>
                           </div>
-                          <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {notification.time}
+                          </p>
                         </div>
                         <div className="flex items-center ml-2">
                           {!notification.read && (
-                            <button 
+                            <button
                               onClick={() => markAsRead(notification.id)}
                               className="text-blue-400 hover:text-blue-300 p-1 rounded-full hover:bg-gray-600"
                               title="Đánh dấu đã đọc"
@@ -249,7 +313,7 @@ const Header = ({title}) => {
                               <Eye className="w-4 h-4" />
                             </button>
                           )}
-                          <button 
+                          <button
                             onClick={() => deleteNotification(notification.id)}
                             className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-gray-600 ml-1"
                             title="Xóa thông báo"
@@ -267,17 +331,24 @@ const Header = ({title}) => {
                   </div>
                 )}
               </div>
-              
+
               <div className="px-4 py-3 border-t border-gray-700 flex justify-between bg-gray-800">
-                <button 
-                  onClick={() => setNotifications(notifications.map(n => ({...n, read: true})))}
+                <button
+                  onClick={() =>
+                    setNotifications(
+                      notifications.map((n) => ({ ...n, read: true }))
+                    )
+                  }
                   className="text-sm text-blue-400 hover:text-blue-300 flex items-center transition-colors duration-200 px-2 py-1 rounded hover:bg-gray-700"
-                  disabled={notifications.length === 0 || !notifications.some(n => !n.read)}
+                  disabled={
+                    notifications.length === 0 ||
+                    !notifications.some((n) => !n.read)
+                  }
                 >
                   <Eye className="w-4 h-4 mr-1" />
                   Đánh dấu tất cả
                 </button>
-                <button 
+                <button
                   onClick={deleteAllNotifications}
                   className="text-sm text-red-400 hover:text-red-300 flex items-center transition-colors duration-200 px-2 py-1 rounded hover:bg-gray-700"
                   disabled={notifications.length === 0}
@@ -290,30 +361,35 @@ const Header = ({title}) => {
           )}
         </div>
         <div className="relative" ref={dropdownRef}>
-          <div 
-            className="flex items-center cursor-pointer" 
+          <div
+            className="flex items-center cursor-pointer"
             onClick={toggleDropdown}
           >
-            <img 
-              src="../avartarAdmin.png" 
-              alt="Admin" 
-              className="w-9 h-9 rounded-full object-cover border-2 border-gray-600" 
+            <img
+              src= {getImageSrc(userData.avatar)}
+              alt="Admin"
+              className="w-9 h-9 rounded-full object-cover border-2 border-gray-600"
             />
-            <div className="ml-2 text-white">Admin</div>
-            <svg 
-              className={`w-5 h-5 ml-1 text-white transition-transform duration-200 ${dropdownOpen ? 'transform rotate-180' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
+            <div className="ml-2 text-white">{userData.name}</div>
+            <svg
+              className={`w-5 h-5 ml-1 text-white transition-transform duration-200 ${
+                dropdownOpen ? "transform rotate-180" : ""
+              }`}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
-          
+
           {/* Chọn menu cho admin */}
-          {dropdownOpen && (
-            <PopupMenu onLogout={handleLogout} />
-          )}
+          {dropdownOpen && <PopupMenu onLogout={handleLogout} />}
         </div>
       </div>
     </header>
