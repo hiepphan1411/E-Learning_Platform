@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import CustomButton from "../button/CustomButtom";
 import "./Navbar.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SignInModal from "../modal/SignInModal";
+import SignUpModal from "../modal/SignUpModal";
 import UserInfo from "../userinfo/UserInfo";
 
 const NavbarMenu = [
@@ -34,13 +35,35 @@ const NavbarMenu = [
 ];
 
 function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isSignInModal, setIsSignInModal] = useState(false);
+  const [isSignUpModal, setIsSignUpModal] = useState(false);
 
-  console.log(isModalOpen);
+  useEffect(() => {
+    const userInfo = localStorage.getItem("user");
+    if (userInfo) {
+      setIsLoggedIn(true);
+      setUser(JSON.parse(userInfo));
+    }
+  }, []);
 
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUser(null);
+    window.location.reload();
+  };
+
+  const handleOpenSignIn = () => {
+    setIsSignUpModal(false);
+    setIsSignInModal(true);
+  };
+
+  const handleOpenSignUp = () => {
+    setIsSignInModal(false);
+    setIsSignUpModal(true);
+  };
 
   return (
     <nav className="relative z-20 flex items-center justify-between px-14 py-10">
@@ -56,15 +79,35 @@ function Navbar() {
           ))}
         </ul>
         {isLoggedIn ? (
-          <UserInfo image={"./PPH.jpg"} name={"Phan Phước Hiệp"} />
+          <div className="flex items-center gap-4">
+            <UserInfo user={user} />
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-red-600 hover:text-red-700"
+            >
+              Logout
+            </button>
+          </div>
         ) : (
-          <CustomButton
-            title={"Sign in"}
-            onClick={handleOpenModal}
-          ></CustomButton>
+          <button
+            onClick={handleOpenSignIn}
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+          >
+            Sign In
+          </button>
         )}
       </div>
-      <SignInModal isOpen={isModalOpen} onClose={handleCloseModal} />
+      <SignInModal
+        isOpen={isSignInModal}
+        onClose={() => setIsSignInModal(false)}
+        onSignUpClick={handleOpenSignUp}
+      />
+
+      <SignUpModal
+        isOpen={isSignUpModal}
+        onClose={() => setIsSignUpModal(false)}
+        onSignInClick={handleOpenSignIn}
+      />
     </nav>
   );
 }

@@ -1,18 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  CheckIcon,
-  Youtube,
-  Instagram,
-  Github,
-  Linkedin,
-  Facebook,
-} from "lucide-react";
+import { Youtube, Instagram, Github, Linkedin, Facebook } from "lucide-react";
 
-function SignInModal({ isOpen, onClose }) {
+function SignInModal({ isOpen, onClose, onSignUpClick }) {
+  const [userName, setUserName] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
+    }
+  };
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: userName,
+          password: pass,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        onClose();
+        window.location.reload();
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      console.error("Sign in error:", err);
+      setError("Đã xảy ra lỗi khi đăng nhập");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,97 +78,57 @@ function SignInModal({ isOpen, onClose }) {
             className="bg-white rounded-lg p-6 w-[600px] shadow-lg"
           >
             <h2 className="text-3xl font-bold mb-4 text-center">
-              Sign In HiGi
+              Đăng nhập HiGi
             </h2>
-            <p className="text-center">
-              Học tập - Rèn luyện - Chia sẻ - Kết nối
-            </p>
-            <form>
-              <div className="flex mb-4 mt-4 gap-10">
-                <div className="w-1/2">
-                  <input
-                    type="lastname"
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
-                    placeholder="Last Name"
-                  />
-                </div>
-                <div className="w-1/2">
-                  <input
-                    type="firstname"
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
-                    placeholder="First Name"
-                  />
-                </div>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg">
+                {error}
               </div>
+            )}
+            <form onSubmit={handleSignIn}>
               <div className="mb-4 mt-4">
                 <input
-                  type="email"
+                  type="text"
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  placeholder="Email"
+                  placeholder="Tên đăng nhập"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
               <div className="mb-4 mt-4">
                 <input
                   type="password"
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  placeholder="Password"
-                />
-              </div>
-              <div className="mb-4 mt-4">
-                <input
-                  type="confirmpassword"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  placeholder="Confirm Password"
+                  placeholder="Mật khẩu"
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700"
+                className={`w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isLoading}
               >
-                Sign In
+                {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
               </button>
               <div className="mt-4">
-                <input type="checkbox" /> Bằng cách đăng ký HiGi, bạn đồng ý với{" "}
-                <span className="text-red-600 cursor-pointer hover:underline">
-                  Điều khoản dịch vụ
-                </span>{" "}
-                và{" "}
-                <span className="text-red-600 cursor-pointer hover:underline">
-                  Chính sách quyền riêng tư
-                </span>{" "}
-                của HiGi
-              </div>
-              <div className="flex flex-col items-center justify-center w-full mt-4">
-                <div className="flex items-center w-full">
-                  <div className="flex-grow h-px bg-black"></div>
-                  <span className="px-2 whitespace-nowrap">
-                    Hoặc bạn có thể kết nối với chúng tôi thông qua
-                  </span>
-                  <div className="flex-grow h-px bg-black"></div>
-                </div>
-                <div className="flex w-full items-center justify-around mt-4 gap-4">
-                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
-                    <Facebook strokeWidth={0.75} className="h-12 w-8" />
-                  </button>
-                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
-                    <Github strokeWidth={0.75} className="h-12 w-8" />
-                  </button>
-                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
-                    <Linkedin strokeWidth={0.75} className="h-12 w-8" />
-                  </button>
-                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
-                    <Instagram strokeWidth={0.75} className="h-12 w-8" />
-                  </button>
-                  <button className="flex items-center justify-center bg-gray-100 px-2 rounded-lg shadow hover:bg-gray-200">
-                    <Youtube strokeWidth={0.75} className="h-12 w-8" />
-                  </button>
-                </div>
+                <input type="checkbox" /> Remember me{" "}
               </div>
             </form>
             <div className="flex w-full items-center justify-center gap-1 mt-16">
-              Bạn đã có tài khoản?{" "}
-              <span className="text-teal-400 cursor-pointer hover:underline">
-                Đăng nhập
+              Bạn đã chưa có tài khoản?{" "}
+              <span
+                className="text-teal-400 cursor-pointer hover:underline"
+                onClick={() => {
+                  onClose();
+                  onSignUpClick();
+                }}
+              >
+                Đăng ký
               </span>
             </div>
           </motion.div>
