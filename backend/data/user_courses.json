@@ -1,0 +1,45 @@
+[
+    {
+      "user_id": "user001",
+      "course_id": "course001",
+      "date_of_purchase": "2025-03-01T00:00:00Z",
+      "duration": "2025-09-01T00:00:00Z",
+      "price": 750000.0
+    },
+    {
+      "user_id": "user002",
+      "course_id": "course004",
+      "date_of_purchase": "2025-04-10T00:00:00Z",
+      "duration": "2025-10-10T00:00:00Z",
+      "price": 650000.0
+    },
+    {
+      "user_id": "user003",
+      "course_id": "course003",
+      "date_of_purchase": "2025-03-20T00:00:00Z",
+      "duration": "2025-09-20T00:00:00Z",
+      "price": 599000.0
+    },
+    {
+      "user_id": "user005",
+      "course_id": "course006",
+      "date_of_purchase": "2025-01-15T00:00:00Z",
+      "duration": "2025-07-15T00:00:00Z",
+      "price": 400000.0
+    },
+    {
+      "user_id": "user006",
+      "course_id": "course002",
+      "date_of_purchase": "2025-02-12T00:00:00Z",
+      "duration": "2025-08-12T00:00:00Z",
+      "price": 720000.0
+    },
+    {
+      "user_id": "user007",
+      "course_id": "course005",
+      "date_of_purchase": "2025-03-30T00:00:00Z",
+      "duration": "2025-09-30T00:00:00Z",
+      "price": 680000.0
+    }
+  ]
+  

@@ -1,0 +1,73 @@
+[
+    {
+      "page": "/home",
+      "user_id": "user001",
+      "ipAddress": "192.168.1.10",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "timestamp": "2025-05-04T14:00:00Z"
+    },
+    {
+      "page": "/analytics",
+      "user_id": "user002",
+      "ipAddress": "192.168.1.11",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+      "timestamp": "2025-05-04T14:01:00Z"
+    },
+    {
+      "page": "/users",
+      "user_id": "user003",
+      "ipAddress": "192.168.1.12",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64)",
+      "timestamp": "2025-05-04T14:02:00Z"
+    },
+    {
+      "page": "/home",
+      "user_id": "user004",
+      "ipAddress": "192.168.1.13",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)",
+      "timestamp": "2025-05-04T14:03:00Z"
+    },
+    {
+      "page": "/analytics",
+      "user_id": "user005",
+      "ipAddress": "192.168.1.14",
+      "userAgent": "Mozilla/5.0 (Android 10; Mobile; rv:68.0)",
+      "timestamp": "2025-05-04T14:04:00Z"
+    },
+    {
+      "page": "/users",
+      "user_id": "user001",
+      "ipAddress": "192.168.1.15",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "timestamp": "2025-05-04T14:05:00Z"
+    },
+    {
+      "page": "/home",
+      "user_id": "user002",
+      "ipAddress": "192.168.1.16",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+      "timestamp": "2025-05-04T14:06:00Z"
+    },
+    {
+      "page": "/analytics",
+      "user_id": "user003",
+      "ipAddress": "192.168.1.17",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64)",
+      "timestamp": "2025-05-04T14:07:00Z"
+    },
+    {
+      "page": "/users",
+      "user_id": "user004",
+      "ipAddress": "192.168.1.18",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)",
+      "timestamp": "2025-05-04T14:08:00Z"
+    },
+    {
+      "page": "/home",
+      "user_id": "user005",
+      "ipAddress": "192.168.1.19",
+      "userAgent": "Mozilla/5.0 (Android 10; Mobile; rv:68.0)",
+      "timestamp": "2025-05-04T14:09:00Z"
+    }
+  ]
+  

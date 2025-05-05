@@ -1,21 +1,24 @@
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
-
-const categoryData = [
-	{ name: "KH cơ bản", value: 4500 },
-	{ name: "KH nâng cao", value: 3200 },
-	{ name: "Chia sẻ kinh nghiệm", value: 2800 },
-	{ name: "Kĩ năng tiếng anh", value: 2100 },
-	{ name: "Khác", value: 900 },
-];
-
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 
-export default function PieCategoryCourse() {
+export default function PieCategoryCourse({ courses }) {
+
+    const categoryData = courses.reduce((acc, course) => {
+        const categoryName = course.category ? (typeof course.category === "object" ? course.category.name : course.category.split(' - ')[0]) : "Khác";
+        const existingCategory = acc.find(item => item.name === categoryName);
+        if (existingCategory) {
+            existingCategory.value += 1;
+        } else {
+            acc.push({ name: categoryName, value: 1 });
+        }
+        return acc;
+    }, []);
+
     return (
 		<motion.div
-			className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 z-10'
+			className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 z-0'
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.3 }}
