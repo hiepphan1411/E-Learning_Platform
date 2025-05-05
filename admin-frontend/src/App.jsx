@@ -40,7 +40,7 @@ function App() {
               <Route path="sales" element={<SalesPage />} />
               <Route path="certificates" element={<CertificatesPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="setting" element={<SettingPage />} />
+              <Route path="settings" element={<SettingPage />} />
             </Route>
           </Routes>
         </TitleProvider>

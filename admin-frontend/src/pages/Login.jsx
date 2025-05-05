@@ -7,6 +7,42 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const { handleLogin } = useContext(AuthContext);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/all-data/users") 
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("fetch() got:", data);
+        const formattedData = data.map((user) => ({
+          id: user.id || user._id,
+          name: user.name || "Unknown User",
+          birthDate: user.birthDate ? new Date(user.birthDate).toISOString().split("T")[0] : "N/A",
+          username: user.account?.user_name || "N/A",
+          email: user.email || "N/A",
+          type: user.account?.type || 0,
+          pass: user.account?.password || "N/A",
+          createdAt: user.account?.createAt ? new Date(user.account.createAt).toISOString().split("T")[0] : "N/A",
+          source: user.account?.To || "Direct",
+          typeUser: user.typeUser || "Học viên",
+          status: user.status || "N/A",
+          avatar: user.avatarData || "../avatarAdmin.png",
+          _original: user,
+        }));
+        setUsers(formattedData);
+        
+
+        
+      })
+      .catch((err) => {
+        console.error("fetch() error:", err);
+      });
+  }, []);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("adminEmail");

@@ -4,6 +4,8 @@ import PopupMenu from './PopupMenu';
 import io from 'socket.io-client';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({title}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -12,6 +14,7 @@ const Header = ({title}) => {
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
   const socketRef = useRef(null);
+  const navigate = useNavigate();
   
 
   useEffect(() => {
@@ -135,6 +138,22 @@ const Header = ({title}) => {
   };
   
   const unreadCount = notifications.filter(notification => !notification.read).length;
+
+  const handleLogout = () => {
+    toast.success("Đăng xuất thành công!", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+
+    localStorage.removeItem('adminToken');
+    setTimeout(() => {
+      navigate('/login');
+    }, 2000);
+  };
 
   return (
     <header className="bg-gray-800 bg-opacity-50 shadow-lg px-4 py-2 flex items-center justify-between">
@@ -293,7 +312,7 @@ const Header = ({title}) => {
           
           {/* Chọn menu cho admin */}
           {dropdownOpen && (
-            <PopupMenu />
+            <PopupMenu onLogout={handleLogout} />
           )}
         </div>
       </div>

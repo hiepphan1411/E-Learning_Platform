@@ -978,11 +978,11 @@ const CoursesTable = ({courses = [], onCoursesUpdate}) => {
                         <h4 className="text-gray-300 text-sm mb-2 font-medium">
                           Mẫu chứng chỉ
                         </h4>
-                        {selectedCourse.certificate.image ? (
+                        {selectedCourse.certificate ? (
                           <div className="flex justify-center">
                             <img
                               src={getImageSrc(
-                                selectedCourse.certificate.image
+                                selectedCourse.certificate.dataImage
                               )}
                               alt="Certificate"
                               className="max-h-60 rounded-lg object-contain"

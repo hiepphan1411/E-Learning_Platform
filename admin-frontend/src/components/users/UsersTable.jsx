@@ -370,7 +370,7 @@ export default function UsersTable({ users: initialUsers }) {
 
       <div
         className="overflow-x-auto"
-        style={{ maxHeight: "600px", minHeight: "200px" }}
+        style={{ maxHeight: "600px", minHeight: "450px" }}
       >
         <table className="min-w-full divide-y divide-gray-700">
           <thead className="bg-gray-800 sticky top-0">
