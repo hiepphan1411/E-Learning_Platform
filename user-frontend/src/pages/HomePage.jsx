@@ -17,7 +17,7 @@ function HomePage() {
           <Route path="courses" element={<TeacherCourseManagement />} />
           <Route path="teacher/courses" element={<TeacherCourseManagement />} />
           <Route path="teacher/courses/add" element={<TeacherCourseManagement isAdding={true} />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="teacher/courses/edit/:courseId" element={<TeacherCourseManagement isEditing={true} />} />
         </Route>
       </Routes>

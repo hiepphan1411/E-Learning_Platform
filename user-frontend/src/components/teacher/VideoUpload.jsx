@@ -42,7 +42,6 @@ function VideoUpload({ courseId }) {
     setIsUploading(true);
     setMessage({ type: '', text: '' });
 
-    // Create form data for the upload
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -50,7 +49,7 @@ function VideoUpload({ courseId }) {
     formData.append('courseId', courseId);
 
     try {
-      // Simulate upload progress
+
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           const newProgress = prev + 5;
@@ -62,7 +61,6 @@ function VideoUpload({ courseId }) {
         });
       }, 300);
 
-      // Send the video to the server
       const response = await fetch('/api/videos/upload', {
         method: 'POST',
         body: formData,
@@ -74,7 +72,6 @@ function VideoUpload({ courseId }) {
       if (response.ok) {
         setMessage({ type: 'success', text: 'Video uploaded successfully!' });
         resetForm();
-        // You could add a callback to refresh the video list
       } else {
         const error = await response.json();
         setMessage({ type: 'error', text: error.message || 'Failed to upload video' });
@@ -84,7 +81,6 @@ function VideoUpload({ courseId }) {
       setMessage({ type: 'error', text: 'An error occurred while uploading the video' });
     } finally {
       setIsUploading(false);
-      // After success or error, progress should be reset after a short delay
       setTimeout(() => {
         if (message.type !== 'error') {
           setUploadProgress(0);
