@@ -24,7 +24,6 @@ export default function PieSaleCategory({ dataSales }) {
         return res.json();
       })
       .then((data) => {
-        console.log("fetch() got:", data);
         const formattedData = data.map((course) => ({
           id: course.id || course._id,
           actor: course.actor || "Unknown",
@@ -50,7 +49,6 @@ export default function PieSaleCategory({ dataSales }) {
 
           _original: course,
         }));
-        console.log("Formatted data:", formattedData);
         setCourses(formattedData);
       })
       .catch((err) => {
@@ -96,7 +94,6 @@ export default function PieSaleCategory({ dataSales }) {
         value: Math.round(value), 
       }));
       
-      console.log("Sales by category:", salesData);
       setSalesByCategory(salesData.length > 0 ? salesData : [
         { name: "No Sales Data", value: 1 }
       ]);
