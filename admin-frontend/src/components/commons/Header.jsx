@@ -42,6 +42,7 @@ const Header = ({ title }) => {
       }
     };
   }, []);
+
   // Kiểm tra xem chuỗi có phải là Base64 hay không
   const isBase64Image = (src) => {
     return (
@@ -67,6 +68,7 @@ const Header = ({ title }) => {
 
     return image;
   };
+
   const formatNotification = (notification) => {
     const createdAt = notification.createdAt?.$date
       ? new Date(notification.createdAt.$date)
@@ -366,7 +368,7 @@ const Header = ({ title }) => {
             onClick={toggleDropdown}
           >
             <img
-              src= {getImageSrc(userData.avatar)}
+              src={getImageSrc(userData.avatar)}
               alt="Admin"
               className="w-9 h-9 rounded-full object-cover border-2 border-gray-600"
             />
