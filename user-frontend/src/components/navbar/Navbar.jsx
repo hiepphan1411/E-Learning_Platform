@@ -85,13 +85,7 @@ function Navbar() {
         </ul>
         {isLoggedIn ? (
           <div className="flex items-center gap-4">
-            <UserInfo user={user} />
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-red-600 hover:text-red-700"
-            >
-              Logout
-            </button>
+            <UserInfo user={user} onLogout={handleLogout} />
           </div>
         ) : (
           <button

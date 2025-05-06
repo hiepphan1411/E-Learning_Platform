@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { getYouTubeVideoId } from "../utils/videoUtils";
 
 const CoursePage = () => {
   const [names, setNames] = useState("");
@@ -65,27 +66,44 @@ const CoursePage = () => {
     );
   }
 
+  const renderVideo = (videoUrl) => {
+    const videoId = getYouTubeVideoId(videoUrl);
+
+    if (!videoId) {
+      return (
+        <div className="bg-gray-100 p-4 rounded-lg text-center">
+          Invalid video URL
+        </div>
+      );
+    }
+
+    return (
+      <div className="aspect-w-16 aspect-h-9">
+        <iframe
+          className="w-full h-[600px] rounded-lg shadow-md"
+          src={`https://www.youtube.com/embed/${videoId}`}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex flex-1">
-        <main className="flex-1 bg-white p-8">
+      <div className="flex">
+        <main className="flex-1 bg-white px-8 py-2">
           <h1 className="text-2xl font-bold mb-4">{course.name}</h1>
           <h2 className="text-xl font-semibold mb-4">
             {course.lession[selectedLesson].name}
           </h2>
           <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col gap-2">
-              <video
-                controls
-                className="w-full rounded-lg shadow-md"
-                src={
-                  course.lession[selectedLesson].video_courses[selectedVideo]
-                    .link
-                }
-              />
-              <span className="text-sm text-gray-600">
-                Video {selectedVideo + 1}
-              </span>
+              {renderVideo(
+                course.lession[selectedLesson].video_courses[selectedVideo].link
+              )}
             </div>
           </div>
         </main>
@@ -112,7 +130,9 @@ const CoursePage = () => {
                     setSelectedVideo(0);
                   }}
                 >
-                  <span className="font-bold">{lesson.name}</span>
+                  <span className="font-bold">
+                    {index + 1}. {lesson.name}
+                  </span>
                   <span className="text-gray-500 text-sm">
                     {`${index}/${lesson.video_courses.length} | ${lesson.video_courses.length} videos`}
                   </span>
@@ -129,7 +149,7 @@ const CoursePage = () => {
                         }`}
                         onClick={() => setSelectedVideo(vIndex)}
                       >
-                        <span>{`${index + 1}.${vIndex + 1}. Video ${
+                        <span>{`${index + 1}.${vIndex + 1}. ${video.title} ${
                           vIndex + 1
                         }`}</span>
                         <span
