@@ -108,8 +108,8 @@ const CoursePage = () => {
           </div>
         </main>
 
-        <aside className="w-1/4 bg-blue-50 p-4 border-r">
-          <div className="mb-4">
+        <aside className="w-1/4 bg-blue-50 border-r">
+          <div className="m-4">
             <input
               type="text"
               placeholder="Tìm theo tên bài học"
@@ -122,7 +122,7 @@ const CoursePage = () => {
             {course.lession.map((lesson, index) => (
               <li key={lesson.lession_id}>
                 <div
-                  className={`flex items-center justify-between cursor-pointer p-2 rounded ${
+                  className={`flex flex-col items-start justify-between cursor-pointer pl-6 p-2 rounded ${
                     selectedLesson === index ? "bg-blue-100" : ""
                   }`}
                   onClick={() => {
@@ -138,20 +138,18 @@ const CoursePage = () => {
                   </span>
                 </div>
                 {selectedLesson === index && (
-                  <ul className="pl-4 mt-2 space-y-1">
+                  <ul className="space-y-1">
                     {lesson.video_courses.map((video, vIndex) => (
                       <li
                         key={vIndex}
                         className={`flex items-center gap-2 cursor-pointer ${
-                          selectedVideo === vIndex
-                            ? "text-teal-600"
-                            : "text-blue-600"
+                          selectedVideo === vIndex ? "bg-blue-100" : ""
                         }`}
                         onClick={() => setSelectedVideo(vIndex)}
                       >
-                        <span>{`${index + 1}.${vIndex + 1}. ${video.title} ${
+                        <span className="text-sm pl-8 py-1">{`${index + 1}.${
                           vIndex + 1
-                        }`}</span>
+                        }. ${video.title}`}</span>
                         <span
                           className={`${
                             selectedVideo === vIndex
