@@ -5,6 +5,7 @@ import CoursePage from "./CoursePage";
 import ServicePage from "./ServicePage";
 import TeacherCourseManagement from "./TeacherCourseManagement";
 import SettingsPage from "./SettingsPage";
+import MyCoursePage from "./MyCoursePage";
 
 function HomePage() {
   return (
@@ -16,9 +17,16 @@ function HomePage() {
           <Route path="services/:courseId" element={<CoursePage />} />
           <Route path="courses" element={<TeacherCourseManagement />} />
           <Route path="teacher/courses" element={<TeacherCourseManagement />} />
-          <Route path="teacher/courses/add" element={<TeacherCourseManagement isAdding={true} />} />
+          <Route
+            path="teacher/courses/add"
+            element={<TeacherCourseManagement isAdding={true} />}
+          />
           <Route path="settings" element={<SettingsPage />} />
-          <Route path="teacher/courses/edit/:courseId" element={<TeacherCourseManagement isEditing={true} />} />
+          <Route
+            path="teacher/courses/edit/:courseId"
+            element={<TeacherCourseManagement isEditing={true} />}
+          />
+          <Route path="my-courses" element={<MyCoursePage />} />
         </Route>
       </Routes>
     </div>

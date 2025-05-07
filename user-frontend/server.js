@@ -218,5 +218,44 @@ app.get("/api/course-author/:courseId", async (req, res) => {
   }
 });
 
+app.get("/api/user-courses/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const userCourses = await mongoose.connection.db
+      .collection("user_courses")
+      .find({ user_id: userId })
+      .toArray();
+
+    if (!userCourses || userCourses.length === 0) {
+      return res.status(404).json({
+        error: "No courses found for this user",
+      });
+    }
+
+    const courseIds = userCourses.map((uc) => uc.course_id);
+
+    const courses = await mongoose.connection.db
+      .collection("courses")
+      .find({ id: { $in: courseIds } })
+      .toArray();
+
+    const coursesWithDetails = courses.map((course) => {
+      const userCourse = userCourses.find((uc) => uc.course_id === course.id);
+      return {
+        ...course,
+        purchaseDate: userCourse.date_of_purchase,
+        expiryDate: userCourse.duration,
+        pricePaid: userCourse.price,
+      };
+    });
+
+    res.json(coursesWithDetails);
+  } catch (error) {
+    console.error("Error fetching user courses:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
