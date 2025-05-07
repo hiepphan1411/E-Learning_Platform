@@ -1,10 +1,11 @@
 import Content from "../components/content/Content";
 import { Route, Routes } from "react-router-dom";
 import Layout from "../components/layout/Layout";
-import CoursePage from "./CoursePage";
 import ServicePage from "./ServicePage";
 import TeacherCourseManagement from "./TeacherCourseManagement";
+import CourseDetailPage from "./CourseDetailPage";
 import SettingsPage from "./SettingsPage";
+
 
 function HomePage() {
   return (
@@ -13,7 +14,7 @@ function HomePage() {
         <Route path="/" element={<Layout />}>
           <Route path="home" element={<Content />} />
           <Route path="services" element={<ServicePage />} />
-          <Route path="services/:courseId" element={<CoursePage />} />
+          <Route path="services/:courseId" element={<CourseDetailPage />} />
           <Route path="courses" element={<TeacherCourseManagement />} />
           <Route path="teacher/courses" element={<TeacherCourseManagement />} />
           <Route path="teacher/courses/add" element={<TeacherCourseManagement isAdding={true} />} />

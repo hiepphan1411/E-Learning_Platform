@@ -186,7 +186,11 @@ const SettingsPage = () => {
         >
           <div className="setting-info">
             <h4 className="text-sm font-medium text-gray-900">{label}</h4>
-            <p className="text-gray-500 text-sm mt-1">{value}</p>
+            {React.isValidElement(value) ? (
+              value
+            ) : (
+              <p className="text-gray-500 text-sm mt-1">{value}</p>
+            )}
           </div>
           {!isEditing && <FaChevronRight className="text-gray-400" />}
         </div>
@@ -207,7 +211,6 @@ const SettingsPage = () => {
     return fieldLabels[field] || field;
   };
   
-  // Helper function to get value for a field
   const getFieldValue = (field) => {
     if (!userData) return "Chưa cập nhật";
     
@@ -296,7 +299,7 @@ const SettingsPage = () => {
                 field="avatarData"
                 label="Ảnh đại diện"
                 value={
-                  <div className="avatar-placeholder">
+                  <div className="avatar-placeholder text-gray-500 text-sm mt-1">
                     {userData?.avatarData ? (
                       <img
                         src={getImageSrc(userData.avatarData)}
@@ -361,7 +364,6 @@ const SettingsPage = () => {
         )}
       </div>
       
-      {/* Remove the original EditModal component since we're using inline editing now */}
     </div>
   );
 };
