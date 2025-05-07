@@ -11,12 +11,28 @@ import SettingPage from "./pages/SettingPage";
 import UsersPage from "./pages/UsersPage";
 import Login from "./pages/Login";
 import { useState, createContext } from "react";
+import { useEffect } from "react";
 
 export const AuthContext = createContext(null);
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem("isAuthenticated") === "true";
+  });
+  
+  const [userData, setUserData] = useState(() => {
+    const savedUser = localStorage.getItem("userData");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("isAuthenticated", isAuthenticated);
+    if (userData) {
+      localStorage.setItem("userData", JSON.stringify(userData));
+    } else {
+      localStorage.removeItem("userData");
+    }
+  }, [isAuthenticated, userData]);
 
   const handleLogin = (user) => {
     setIsAuthenticated(true);
@@ -26,6 +42,8 @@ function App() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserData(null);
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userData");
   };
 
   return (
