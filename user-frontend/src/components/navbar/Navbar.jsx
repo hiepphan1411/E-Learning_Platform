@@ -71,7 +71,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="relative z-20 flex items-center justify-between px-14 py-10">
+    <nav className="relative z-20 flex items-center justify-between px-5 py-3">
       <img src="../logo.png" alt="Logo Higi" className="h-12"></img>
       <div className="flex items-center gap-[20px]">
         <ul className="flex items-center justify-center gap-[20px]">
@@ -88,12 +88,20 @@ function Navbar() {
             <UserInfo user={user} onLogout={handleLogout} />
           </div>
         ) : (
-          <button
-            onClick={handleOpenSignIn}
-            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-          >
-            Sign In
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleOpenSignIn}
+              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={handleOpenSignUp}
+              className="px-4 py-2 border border-teal-600 text-teal-600 rounded-lg hover:bg-teal-50"
+            >
+              Sign Up
+            </button>
+          </div>
         )}
       </div>
       <SignInModal

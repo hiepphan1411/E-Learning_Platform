@@ -93,7 +93,6 @@ function ServicePage() {
     } else if (sortBy === "newest") {
       result.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
-
     setFilteredCourses(result);
   }, [courses, searchTerm, selectedCategory, priceFilter, sortBy]);
 
@@ -153,7 +152,6 @@ function ServicePage() {
               ))}
             </div>
           </div>
-
           <div className="mb-6">
             <h3 className="font-medium mb-2">Price</h3>
             <div className="flex flex-col gap-2">
@@ -189,7 +187,6 @@ function ServicePage() {
               </label>
             </div>
           </div>
-
           <div>
             <h3 className="font-medium mb-2">Sort By</h3>
             <select
