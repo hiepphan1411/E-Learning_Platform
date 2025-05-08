@@ -12,6 +12,7 @@ function CourseTrialPage() {
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10 * 60); 
   const videoRef = useRef(null);
+  const [showLockModal, setShowLockModal] = useState(false);
 
   useEffect(() => {
     const userInfo = localStorage.getItem("user");
@@ -122,7 +123,7 @@ function CourseTrialPage() {
     if (index <= 1) { 
       setCurrentLessonIndex(index);
     } else {
-      alert("This lesson is only available after purchase");
+      setShowLockModal(true);
     }
   };
 
@@ -177,6 +178,37 @@ function CourseTrialPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      {showLockModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fade-in-down">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
+                <svg className="h-10 w-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Locked Content</h3>
+              <p className="text-gray-600 mb-6">
+                This lesson is part of the full course. Purchase the complete course to unlock all content and features.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={handlePurchaseCourse}
+                  className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Purchase Full Course
+                </button>
+                <button
+                  onClick={() => setShowLockModal(false)}
+                  className="w-full sm:w-auto border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="bg-white shadow-sm p-4 flex justify-between items-center">
         <Link to={`/services/${courseId}`} className="flex items-center text-gray-700 hover:text-teal-600">
           <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

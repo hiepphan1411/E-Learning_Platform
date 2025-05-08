@@ -10,6 +10,7 @@ import SuccessPage from "./SuccessPage";
 import CoursePage from "./CoursePage";
 import AboutUsPage from "./AboutUsPage";
 import CourseTrialPage from "./CourseTrialPage";
+import MyCoursePage from "./MyCoursePage";
 
 
 function HomePage() {
