@@ -185,5 +185,38 @@ app.post("/api/auth/signin", async (req, res) => {
   }
 });
 
+app.get("/api/course-author/:courseId", async (req, res) => {
+  const { courseId } = req.params;
+
+  try {
+    const authorCourse = await mongoose.connection.db
+      .collection("author_course")
+      .findOne({ course_id: courseId });
+
+    if (!authorCourse) {
+      return res
+        .status(404)
+        .json({ error: "Author not found for this course" });
+    }
+
+    const author = await mongoose.connection.db
+      .collection("users")
+      .findOne({ id: authorCourse.user_id });
+
+    if (!author) {
+      return res.status(404).json({ error: "user not found" });
+    }
+
+    res.json({
+      id: author.id,
+      name: author.name,
+      avatarData: author.avatarData,
+    });
+  } catch (error) {
+    console.error("Error fetching course author: ", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

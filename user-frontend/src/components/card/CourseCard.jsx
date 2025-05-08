@@ -1,32 +1,25 @@
+import { useEffect, useState } from "react";
 import { getImageSrc } from "../../utils/processBase64";
 import { Link } from "react-router-dom";
 
 function CourseCard({ course }) {
-  // Kiểm tra xem chuỗi có phải là Base64 hay không
-  const isBase64Image = (src) => {
-    return (
-      src &&
-      (src.startsWith("data:image") ||
-        src.startsWith("data:application/octet-stream;base64") ||
-        (src.length > 100 && /^[A-Za-z0-9+/=]+$/.test(src)))
-    );
-  };
+  const [author, setAuthor] = useState(null);
 
-  //Chuyển đổi Base64 thành URL
-  const getImageSrc = (image) => {
-    console.log(image);
-    if (!image) return "../avatarAdmin.png";
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/course-author/${course.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setAuthor(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching author: ", err);
+      });
+  }, [course.id]);
 
-    if (isBase64Image(image)) {
-      if (image.startsWith("data:")) {
-        return image;
-      }
-      console.log(image);
-      return `data:image/jpeg;base64,${image}`;
-    }
+  console.log("Author: " + author);
 
-    return image;
-  };
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 flex flex-col h-full">
       <div className="relative">
@@ -76,11 +69,13 @@ function CourseCard({ course }) {
         <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
           <div className="flex items-center">
             <img
-              src="../avatarAdmin.png"
+              src={author ? getImageSrc(author.avatarData) : "../PPH.png"}
               alt="Instructor"
               className="w-6 h-6 rounded-full mr-2"
             />
-            <span className="text-sm text-gray-600">{course.actor}</span>
+            <span className="text-sm text-gray-600">
+              {author ? author.name : "Undifined"}
+            </span>
           </div>
           <div className="text-sm text-gray-500">
             {new Date(course.date).toLocaleDateString()}
@@ -89,7 +84,7 @@ function CourseCard({ course }) {
 
         <Link
           to={`/services/${course.id}`}
-          className="mt-4 inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300"
+          className="mt-4 inline-block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300"
         >
           View Course
         </Link>
