@@ -59,6 +59,7 @@ app.get(
   }
 );
 
+//Get course by id
 app.get("/api/all-data/courses/by/id/:courseId", async (req, res) => {
   const { courseId } = req.params;
 
@@ -78,6 +79,7 @@ app.get("/api/all-data/courses/by/id/:courseId", async (req, res) => {
   }
 });
 
+//Get all users
 app.get("/api/users", async (req, res) => {
   try {
     const users = await mongoose.connection.db
@@ -142,6 +144,7 @@ app.delete("/api/courses/by-course-id/:courseId", async (req, res) => {
   }
 });
 
+//Đăng nhập
 app.post("/api/auth/signin", async (req, res) => {
   const { username, password } = req.body;
 
@@ -185,6 +188,7 @@ app.post("/api/auth/signin", async (req, res) => {
   }
 });
 
+//Get tác giả của course theo courseId
 app.get("/api/course-author/:courseId", async (req, res) => {
   const { courseId } = req.params;
 
@@ -218,6 +222,7 @@ app.get("/api/course-author/:courseId", async (req, res) => {
   }
 });
 
+//Get các course mà user này đã mua
 app.get("/api/user-courses/:userId", async (req, res) => {
   const { userId } = req.params;
 
@@ -253,6 +258,105 @@ app.get("/api/user-courses/:userId", async (req, res) => {
     res.json(coursesWithDetails);
   } catch (error) {
     console.error("Error fetching user courses:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//Get all coursé
+app.post("/api/all-data/courses", async (req, res) => {
+  try {
+    const newCourse = req.body;
+    const result = await mongoose.connection.db
+      .collection("courses")
+      .insertOne(newCourse);
+
+    res.status(201).json(result);
+  } catch (error) {
+    console.error("Error creating course:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//Get tất cả doc trong collection author-course
+app.post("/api/author-courses", async (req, res) => {
+  try {
+    const authorCourse = req.body;
+
+    if (!authorCourse.user_id || !authorCourse.course_id) {
+      return res.status(400).json({
+        error: "Missing required fields: user_id and course_id",
+      });
+    }
+
+    const result = await mongoose.connection.db
+      .collection("author_course")
+      .insertOne({
+        user_id: authorCourse.user_id,
+        course_id: authorCourse.course_id,
+        posted_date: authorCourse.posted_date || new Date().toISOString(),
+      });
+
+    res.status(201).json({
+      message: "Author course relation created successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error creating author course relation:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//Get course_id lớn nhất
+app.get("/api/latest-course-id", async (req, res) => {
+  try {
+    const latestCourse = await mongoose.connection.db
+      .collection("courses")
+      .find()
+      .sort({ id: -1 })
+      .limit(1)
+      .toArray();
+
+    const latestId = latestCourse[0]?.id || "course000";
+    const currentNumber = parseInt(latestId.replace("course", ""));
+    const nextId = `course${String(currentNumber + 1).padStart(3, "0")}`;
+
+    res.json({ nextId });
+  } catch (error) {
+    console.error("Error getting latest course ID:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//Get all course mà tác giả này đã tạo
+app.get("/api/teacher/courses/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const authorCourses = await mongoose.connection.db
+      .collection("author_course")
+      .find({ user_id: userId })
+      .toArray();
+
+    const courseIds = authorCourses.map((ac) => ac.course_id);
+
+    const courses = await mongoose.connection.db
+      .collection("courses")
+      .find({ id: { $in: courseIds } })
+      .toArray();
+
+    const coursesWithDates = courses.map((course) => {
+      const authorCourse = authorCourses.find(
+        (ac) => ac.course_id === course.id
+      );
+      return {
+        ...course,
+        posted_date: authorCourse.posted_date,
+      };
+    });
+
+    res.json(coursesWithDates);
+  } catch (error) {
+    console.error("Error fetching teacher courses:", error);
     res.status(500).json({ error: "Server error" });
   }
 });

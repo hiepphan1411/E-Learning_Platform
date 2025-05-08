@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";;
+import { useNavigate, useParams } from "react-router-dom";
 import CourseForm from "../components/teacher/CourseForm";
 import VideoUpload from "../components/teacher/VideoUpload";
 
 function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -12,11 +14,25 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('/api/teacher/courses');
+        const userInfo = JSON.parse(localStorage.getItem("user"));
+        if (!userInfo) {
+          throw new Error("User not found");
+        }
+
+        const response = await fetch(
+          `http://localhost:5000/api/teacher/courses/${userInfo.id}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+
         const data = await response.json();
         setCourses(data);
       } catch (error) {
         console.error("Error fetching courses:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -39,12 +55,8 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
     }
   };
 
-  const handleCourseSelect = (course) => {
-    setSelectedCourse(course);
-  };
-
   const handleAddCourse = () => {
-    navigate('/teacher/courses/add');
+    navigate("/teacher/courses/add");
   };
 
   const handleEditCourse = (courseId) => {
@@ -54,8 +66,8 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
   const handleDeleteCourse = async (courseId) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
       try {
-        await fetch(`/api/courses/${courseId}`, { method: 'DELETE' });
-        setCourses(courses.filter(course => course.id !== courseId));
+        await fetch(`/api/courses/${courseId}`, { method: "DELETE" });
+        setCourses(courses.filter((course) => course.id !== courseId));
       } catch (error) {
         console.error("Error deleting course:", error);
       }
@@ -82,49 +94,55 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Course Management</h1>
-      
+      <h1 className="text-2xl font-bold mb-6">Quản lý khóa học</h1>
+
       <div className="mb-6">
-        <button 
+        <button
           onClick={handleAddCourse}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Add New Course
+          Thêm khóa học mới
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-gray-50 p-4 rounded shadow">
-          <h2 className="text-xl font-semibold mb-4">Your Courses</h2>
+      {loading && <div>Đang tải...</div>}
+      {error && <div className="text-red-600">{error}</div>}
+
+      <div className="flex flex-cols gap-6">
+        <div className="w-full p-4 rounded shadow">
+          <h2 className="text-xl font-semibold mb-4">Khóa học của bạn</h2>
           {courses.length === 0 ? (
-            <p>No courses found. Start by adding a new course.</p>
+            <p>Chưa có khóa học nào. Hãy bắt đầu thêm khóa học mới.</p>
           ) : (
-            <ul>
-              {courses.map(course => (
-                <li key={course.id} className="border-b py-3">
+            <ul className="grid grid-cols-3 gap-6">
+              {courses.map((course) => (
+                <li
+                  key={course.id}
+                  className="border-b rounded py-4 px-4 bg-gray-50 shadow-md hover:shadow-xl hover:bg-gray-100 duration-200"
+                >
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="font-medium">{course.title}</h3>
-                      <p className="text-sm text-gray-600">{course.students} enrolled</p>
+                      <h3 className="font-medium">{course.name}</h3>
+                      <p className="text-sm text-gray-600">
+                        Ngày tạo:{" "}
+                        {new Date(course.posted_date).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Trạng thái: {course.statusbar}
+                      </p>
                     </div>
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => handleCourseSelect(course)}
-                        className="text-blue-500 hover:underline"
-                      >
-                        Manage Videos
-                      </button>
-                      <button 
+                    <div className="flex items-center justify-between space-x-2 gap-2">
+                      <button
                         onClick={() => handleEditCourse(course.id)}
-                        className="text-green-500 hover:underline"
+                        className="text-green-500 hover:underline text-base"
                       >
-                        Edit
+                        Chỉnh sửa
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDeleteCourse(course.id)}
-                        className="text-red-500 hover:underline"
+                        className="text-red-500 hover:underline text-base"
                       >
-                        Delete
+                        Xóa
                       </button>
                     </div>
                   </div>
@@ -133,36 +151,6 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
             </ul>
           )}
         </div>
-
-        {selectedCourse && (
-          <div className="bg-gray-50 p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-4">
-              Videos for {selectedCourse.title}
-            </h2>
-            <VideoUpload courseId={selectedCourse.id} />
-            
-            <div className="mt-6">
-              <h3 className="font-medium mb-2">Current Videos:</h3>
-              {selectedCourse.videos && selectedCourse.videos.length > 0 ? (
-                <ul className="space-y-2">
-                  {selectedCourse.videos.map(video => (
-                    <li key={video.id} className="border-b py-2">
-                      <div className="flex justify-between">
-                        <p>{video.title}</p>
-                        <div className="flex space-x-2">
-                          <button className="text-green-500 hover:underline">Edit</button>
-                          <button className="text-red-500 hover:underline">Delete</button>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No videos uploaded for this course yet.</p>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

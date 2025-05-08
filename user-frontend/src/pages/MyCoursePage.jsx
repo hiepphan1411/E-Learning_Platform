@@ -16,7 +16,6 @@ function MyCoursePage() {
         const parsedUserData = JSON.parse(userDataString);
         setUserData(parsedUserData);
 
-        // Fetch user's courses
         fetch(`http://localhost:5000/api/user-courses/${parsedUserData.id}`)
           .then((res) => res.json())
           .then((data) => {
