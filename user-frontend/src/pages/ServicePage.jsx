@@ -9,7 +9,7 @@ function ServicePage() {
   const [categories, setCategories] = useState([]);
   const [priceFilter, setPriceFilter] = useState("all");
   const [sortBy, setSortBy] = useState("default");
-  
+
   useEffect(() => {
     fetch("http://localhost:5000/api/all-data/courses")
       .then((res) => {
@@ -48,10 +48,14 @@ function ServicePage() {
         }));
         setCourses(formattedData);
         setFilteredCourses(formattedData);
-        
-        const uniqueCategories = [...new Set(formattedData.map(course => 
-          course.categoryObject?.field || "Other"
-        ))];
+
+        const uniqueCategories = [
+          ...new Set(
+            formattedData.map(
+              (course) => course.categoryObject?.field || "Other"
+            )
+          ),
+        ];
         setCategories(["All", ...uniqueCategories]);
       })
       .catch((err) => {
@@ -61,26 +65,27 @@ function ServicePage() {
 
   useEffect(() => {
     let result = [...courses];
-    
+
     if (searchTerm) {
-      result = result.filter(course => 
-        course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase())
+      result = result.filter(
+        (course) =>
+          course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          course.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     if (selectedCategory !== "All") {
-      result = result.filter(course => 
-        course.categoryObject?.field === selectedCategory
+      result = result.filter(
+        (course) => course.categoryObject?.field === selectedCategory
       );
     }
 
     if (priceFilter === "free") {
-      result = result.filter(course => course.price === 0);
+      result = result.filter((course) => course.price === 0);
     } else if (priceFilter === "paid") {
-      result = result.filter(course => course.price > 0);
+      result = result.filter((course) => course.price > 0);
     }
-    
+
     if (sortBy === "price-low") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
@@ -88,7 +93,6 @@ function ServicePage() {
     } else if (sortBy === "newest") {
       result.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
-    
     setFilteredCourses(result);
   }, [courses, searchTerm, selectedCategory, priceFilter, sortBy]);
 
@@ -96,7 +100,9 @@ function ServicePage() {
     <div className="flex flex-col px-4 md:px-8 lg:px-12 py-8 bg-gray-50 min-h-screen">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-xl mb-8">
         <h1 className="text-4xl font-bold mb-2">Find Your Perfect Course</h1>
-        <p className="text-lg opacity-90 mb-6">Explore our wide range of courses and start learning today</p>
+        <p className="text-lg opacity-90 mb-6">
+          Explore our wide range of courses and start learning today
+        </p>
         <div className="relative">
           <input
             type="text"
@@ -105,8 +111,19 @@ function ServicePage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <svg className="w-6 h-6 text-gray-500 absolute right-4 top-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+            className="w-6 h-6 text-gray-500 absolute right-4 top-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
         </div>
       </div>
@@ -114,12 +131,15 @@ function ServicePage() {
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/4 bg-white p-6 rounded-xl shadow-sm h-fit">
           <h2 className="text-xl font-semibold mb-4">Filters</h2>
-          
+
           <div className="mb-6">
             <h3 className="font-medium mb-2">Categories</h3>
             <div className="flex flex-col gap-2">
-              {categories.map(category => (
-                <label key={category} className="flex items-center gap-2 cursor-pointer">
+              {categories.map((category) => (
+                <label
+                  key={category}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <input
                     type="radio"
                     name="category"
@@ -132,7 +152,6 @@ function ServicePage() {
               ))}
             </div>
           </div>
-          
           <div className="mb-6">
             <h3 className="font-medium mb-2">Price</h3>
             <div className="flex flex-col gap-2">
@@ -168,7 +187,6 @@ function ServicePage() {
               </label>
             </div>
           </div>
-          
           <div>
             <h3 className="font-medium mb-2">Sort By</h3>
             <select
@@ -183,13 +201,15 @@ function ServicePage() {
             </select>
           </div>
         </div>
-        
+
         <div className="lg:w-3/4">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold">Available Courses</h2>
-            <p className="text-gray-600">{filteredCourses.length} courses found</p>
+            <p className="text-gray-600">
+              {filteredCourses.length} courses found
+            </p>
           </div>
-          
+
           {filteredCourses.length === 0 ? (
             <div className="bg-white p-8 rounded-xl text-center">
               <h3 className="text-xl font-medium mb-2">No courses found</h3>

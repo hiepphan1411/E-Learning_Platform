@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FaChevronRight, FaUser, FaLock, FaTimes } from "react-icons/fa";
 import "../styles/SettingsPage.css";
+import { getImageSrc } from "../utils/processBase64";
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [userData, setUserData] = useState(null);
   const [editingField, setEditingField] = useState(null);
   const [editValue, setEditValue] = useState("");
-  
+
   useEffect(() => {
     const userDataString = localStorage.getItem("user");
     if (userDataString) {
@@ -19,49 +20,22 @@ const SettingsPage = () => {
       }
     }
   }, []);
-  
-  // Kiểm tra xem chuỗi có phải là Base64 hay không
-  const isBase64Image = useCallback((src) => {
-    return (
-      src &&
-      (src.startsWith("data:image") ||
-        src.startsWith("data:application/octet-stream;base64") ||
-        (src.length > 100 && /^[A-Za-z0-9+/=]+$/.test(src)))
-    );
-  }, []);
 
-  //Chuyển đổi Base64 thành URL
-  const getImageSrc = useCallback(
-    (image) => {
-      if (!image) return "../avatarAdmin.png";
-
-      if (isBase64Image(image)) {
-        if (image.startsWith("data:")) {
-          return image;
-        }
-        return `data:image/jpeg;base64,${image}`;
-      }
-
-      return image;
-    },
-    [isBase64Image]
-  );
-  
   const handleEdit = (field, currentValue) => {
     setEditingField(field);
     setEditValue(currentValue || "");
   };
-  
+
   const handleCloseModal = () => {
     setEditingField(null);
     setEditValue("");
   };
-  
+
   const handleSaveEdit = () => {
     if (!editingField) return;
-    
+
     const updatedUserData = { ...userData };
-    
+
     if (editingField === "name") {
       updatedUserData.name = editValue;
     } else if (editingField === "user_name") {
@@ -79,13 +53,13 @@ const SettingsPage = () => {
       if (!updatedUserData.social) updatedUserData.social = {};
       updatedUserData.social[socialType] = editValue;
     }
-    
+
     setUserData(updatedUserData);
     localStorage.setItem("user", JSON.stringify(updatedUserData));
-    
+
     handleCloseModal();
   };
-  
+
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -99,38 +73,49 @@ const SettingsPage = () => {
     }
     handleCloseModal();
   };
-  
+
   const renderEditField = (field) => {
     if (!editingField || editingField !== field) return null;
-    
+
     return (
       <div className="bg-white shadow-lg rounded-lg p-4 mt-2 mb-4 border border-gray-200">
         {field === "avatarData" ? (
           <div className="flex flex-col items-center">
             <div className="mb-4">
               {userData?.avatarData && (
-                <img 
-                  src={getImageSrc(userData.avatarData)} 
-                  alt="Current avatar" 
+                <img
+                  src={getImageSrc(userData.avatarData)}
+                  alt="Current avatar"
                   className="w-20 h-20 rounded-full object-cover mb-2"
                 />
               )}
             </div>
             <label className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded cursor-pointer transition-colors duration-300 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z"
+                  clipRule="evenodd"
+                />
                 <path d="M8 11l2-2 2 2m0 0v4" />
               </svg>
               Chọn ảnh mới
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleAvatarChange} 
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
                 className="hidden"
               />
             </label>
-            <p className="text-gray-500 text-sm mt-2">Hỗ trợ JPG, PNG (tối đa 2MB)</p>
-            <button 
+            <p className="text-gray-500 text-sm mt-2">
+              Hỗ trợ JPG, PNG (tối đa 2MB)
+            </p>
+            <button
               className="mt-3 text-gray-600 hover:text-red-500 transition-colors duration-300"
               onClick={handleCloseModal}
             >
@@ -153,18 +138,27 @@ const SettingsPage = () => {
               />
             </div>
             <div className="flex justify-end space-x-2">
-              <button 
+              <button
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors duration-300 flex items-center"
                 onClick={handleCloseModal}
               >
                 <FaTimes className="mr-1" /> Hủy
               </button>
-              <button 
+              <button
                 className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors duration-300 flex items-center"
                 onClick={handleSaveEdit}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-1"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Thay đổi
               </button>
@@ -174,14 +168,16 @@ const SettingsPage = () => {
       </div>
     );
   };
-  
+
   const SettingItem = ({ field, label, value, onClick, children }) => {
     const isEditing = editingField === field;
-    
+
     return (
       <>
-        <div 
-          className={`border border-gray-200 rounded-md p-3 mb-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors duration-300 ${isEditing ? 'bg-blue-50' : ''}`} 
+        <div
+          className={`border border-gray-200 rounded-md p-3 mb-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors duration-300 ${
+            isEditing ? "bg-blue-50" : ""
+          }`}
           onClick={onClick}
         >
           <div className="setting-info">
@@ -189,7 +185,7 @@ const SettingsPage = () => {
             {React.isValidElement(value) ? (
               value
             ) : (
-              <p className="text-gray-500 text-sm mt-1">{value}</p>
+              <div className="text-gray-500 text-sm mt-1">{value}</div>
             )}
           </div>
           {!isEditing && <FaChevronRight className="text-gray-400" />}
@@ -210,28 +206,30 @@ const SettingsPage = () => {
     };
     return fieldLabels[field] || field;
   };
-  
+
   const getFieldValue = (field) => {
     if (!userData) return "Chưa cập nhật";
-    
+
     if (field === "name") return userData.name || "Chưa cập nhật";
-    if (field === "user_name") return userData.account?.user_name || "Chưa cập nhật";
+    if (field === "user_name")
+      return userData.account?.user_name || "Chưa cập nhật";
     if (field === "email") return userData.email || "Chưa cập nhật";
     if (field === "bio") return userData.bio || "Chưa cập nhật";
-    if (field === "password") return userData.account?.password || "Chưa đặt mật khẩu";
-    
+    if (field === "password")
+      return userData.account?.password || "Chưa đặt mật khẩu";
+
     if (field.startsWith("social_")) {
       const socialType = field.split("_")[1];
       return userData.social?.[socialType] || "Chưa cập nhật";
     }
-    
+
     return "Chưa cập nhật";
   };
-  
+
   return (
     <div className="settings-container">
       <div className="settings-sidebar">
-        <div className="account-header"> 
+        <div className="account-header">
           <h2>Cài đặt tài khoản</h2>
           <p>
             Quản lý cài đặt tài khoản của bạn như thông tin cá nhân, cài đặt bảo
@@ -278,7 +276,9 @@ const SettingsPage = () => {
                 field="user_name"
                 label="Tên người dùng"
                 value={userData?.account?.user_name || "Chưa cập nhật"}
-                onClick={() => handleEdit("user_name", userData?.account?.user_name)}
+                onClick={() =>
+                  handleEdit("user_name", userData?.account?.user_name)
+                }
               />
 
               <SettingItem
@@ -350,8 +350,12 @@ const SettingsPage = () => {
               <SettingItem
                 field="password"
                 label="Tạo mật khẩu"
-                value={userData?.account?.password ? "••••••••" : "Chưa đặt mật khẩu"}
-                onClick={() => handleEdit("password", userData?.account?.password)}
+                value={
+                  userData?.account?.password ? "••••••••" : "Chưa đặt mật khẩu"
+                }
+                onClick={() =>
+                  handleEdit("password", userData?.account?.password)
+                }
               />
 
               <SettingItem
@@ -364,7 +368,6 @@ const SettingsPage = () => {
           </div>
         )}
       </div>
-      
     </div>
   );
 };

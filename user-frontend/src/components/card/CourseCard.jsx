@@ -18,8 +18,6 @@ function CourseCard({ course }) {
       });
   }, [course.id]);
 
-  console.log("Author: " + author);
-
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 flex flex-col h-full">
       <div className="relative">

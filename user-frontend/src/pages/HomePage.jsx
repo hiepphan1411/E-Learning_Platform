@@ -27,6 +27,7 @@ function HomePage() {
           <Route path="/payment/success/:courseId" element={<SuccessPage />} />
           <Route path="teacher/courses/add" element={<TeacherCourseManagement isAdding={true} />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="my-courses" element={<MyCoursePage />} />
           <Route path="teacher/courses/edit/:courseId" element={<TeacherCourseManagement isEditing={true} />} />
           <Route path="about" element={<AboutUsPage />} />
         </Route>
