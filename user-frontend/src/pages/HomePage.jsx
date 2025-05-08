@@ -5,6 +5,11 @@ import ServicePage from "./ServicePage";
 import TeacherCourseManagement from "./TeacherCourseManagement";
 import CourseDetailPage from "./CourseDetailPage";
 import SettingsPage from "./SettingsPage";
+import PaymentPage from "./PaymentPage";
+import SuccessPage from "./SuccessPage";
+import CoursePage from "./CoursePage";
+import AboutUsPage from "./AboutUsPage";
+import CourseTrialPage from "./CourseTrialPage";
 
 
 function HomePage() {
@@ -15,11 +20,15 @@ function HomePage() {
           <Route path="home" element={<Content />} />
           <Route path="services" element={<ServicePage />} />
           <Route path="services/:courseId" element={<CourseDetailPage />} />
+          <Route path="/courses/:courseId" element={<CoursePage />} />
           <Route path="courses" element={<TeacherCourseManagement />} />
-          <Route path="teacher/courses" element={<TeacherCourseManagement />} />
+          <Route path="payment/:courseId" element={<PaymentPage />} />
+          <Route path="/course-trial/:courseId" element={<CourseTrialPage />} />
+          <Route path="/payment/success/:courseId" element={<SuccessPage />} />
           <Route path="teacher/courses/add" element={<TeacherCourseManagement isAdding={true} />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="teacher/courses/edit/:courseId" element={<TeacherCourseManagement isEditing={true} />} />
+          <Route path="about" element={<AboutUsPage />} />
         </Route>
       </Routes>
     </div>

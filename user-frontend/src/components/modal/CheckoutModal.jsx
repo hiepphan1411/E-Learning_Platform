@@ -11,7 +11,6 @@ function CheckoutModal({ isOpen, onClose, course, discountCode, setDiscountCode,
     : course.currentPrice;
 
   const handleProceedToPayment = () => {
-    // In a real app, this would navigate to payment page or process payment
     alert("Proceeding to payment...");
     navigate('/payment', { 
       state: { 

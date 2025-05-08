@@ -25,18 +25,8 @@ const NavbarMenu = [
   {
     id: 4,
     title: "About Us",
-    path: "#",
-  },
-  {
-    id: 5,
-    title: "Our Team",
-    path: "#",
-  },
-  {
-    id: 6,
-    title: "Contact Us",
-    path: "#",
-  },
+    path: "/about",
+  }
 ];
 
 function Navbar() {

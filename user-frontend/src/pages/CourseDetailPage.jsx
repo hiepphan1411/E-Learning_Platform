@@ -14,6 +14,7 @@ function CourseDetailPage() {
 
   useEffect(() => {
     setLoading(true);
+    console.log(courseId);
     fetch(`http://localhost:5000/api/all-data/courses/by/id/${courseId}`)
       .then((res) => {
         if (!res.ok) {
@@ -63,7 +64,7 @@ function CourseDetailPage() {
       return;
     }
     
-    navigate(`/courses/${courseId}/trial`);
+    navigate(`/course-trial/${course.id}`);
   };
 
   const handlePurchase = () => {
@@ -72,7 +73,7 @@ function CourseDetailPage() {
       alert("Please sign in to purchase this course");
       return;
     }
-    setIsCheckoutModalOpen(true);
+    navigate(`/payment/${course.id}`)
   };
 
   const handleCheckDiscount = () => {
@@ -105,7 +106,7 @@ function CourseDetailPage() {
           <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <span className="text-3xl font-bold text-teal-600">${course.price}</span>
+                <span className="text-3xl font-bold text-teal-600">{course.price}</span>
               </div>
               {course.outstanding && (
                 <span className="bg-red-100 text-red-600 px-2 py-1 rounded">
