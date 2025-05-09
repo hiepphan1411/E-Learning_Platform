@@ -1,36 +1,57 @@
-name: Deploy user-frontend to GitHub Pages
+name: Deploy Admin Frontend
 
 on:
   push:
-    branches:
-      - PPH
+    branches: [ PPH ]  
+    paths:
+      - 'admin-frontend/**'
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: user-frontend 
-
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v3
+      
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 18
-
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'admin-frontend/package-lock.json'
+      
       - name: Install dependencies
-        run: npm install
-
+        working-directory: ./admin-frontend
+        run: npm ci
+      
       - name: Build project
+        working-directory: ./admin-frontend
         run: npm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./user-frontend/dist
-          destination_dir: user-frontend
+          name: admin-frontend-build
+          path: admin-frontend/build
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: admin-frontend-build
+          path: ./build
+      
+      - name: Deploy to hosting service
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: your-firebase-project-id
+          channelId: live
+          entryPoint: ./build
