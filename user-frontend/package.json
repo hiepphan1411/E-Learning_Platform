@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://hiepphan1411.github.io/E-Learning_Platform/user-frontend",
   "scripts": {
     "dev-client": "vite",
     "build": "vite build",
@@ -17,6 +18,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "framer-motion": "^12.9.4",
+    "gh-pages": "^6.3.0",
     "lucide-react": "^0.503.0",
     "mongoose": "^8.14.1",
     "react": "^19.0.0",

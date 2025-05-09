@@ -47,7 +47,7 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
 
   const fetchCourseDetails = async (id) => {
     try {
-      const response = await fetch(`/api/courses/${id}`);
+      const response = await fetch(`http://localhost:5000/api/all-data/courses/by/id/${id}`);
       const data = await response.json();
       setSelectedCourse(data);
     } catch (error) {

@@ -94,7 +94,7 @@ function SuccessPage() {
 
           <button
             onClick={handleStartLearning}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-md text-lg transition-colors"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-md text-lg transition-colors"
           >
             BẮT ĐẦU HỌC
           </button>
