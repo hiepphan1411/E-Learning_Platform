@@ -12,7 +12,6 @@ import AboutUsPage from "./AboutUsPage";
 import CourseTrialPage from "./CourseTrialPage";
 import MyCoursePage from "./MyCoursePage";
 
-
 function HomePage() {
   return (
     <div className="home-page-container flex flex-col w-full gap-2 bg-white">
@@ -26,10 +25,16 @@ function HomePage() {
           <Route path="payment/:courseId" element={<PaymentPage />} />
           <Route path="/course-trial/:courseId" element={<CourseTrialPage />} />
           <Route path="/payment/success/:courseId" element={<SuccessPage />} />
-          <Route path="teacher/courses/add" element={<TeacherCourseManagement isAdding={true} />} />
+          <Route
+            path="teacher/courses/add"
+            element={<TeacherCourseManagement isAdding={true} />}
+          />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="my-courses" element={<MyCoursePage />} />
-          <Route path="teacher/courses/edit/:courseId" element={<TeacherCourseManagement isEditing={true} />} />
+          <Route
+            path="teacher/courses/edit/:courseId"
+            element={<TeacherCourseManagement isEditing={true} />}
+          />
           <Route path="about" element={<AboutUsPage />} />
         </Route>
       </Routes>

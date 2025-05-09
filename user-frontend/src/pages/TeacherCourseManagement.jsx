@@ -47,11 +47,24 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
 
   const fetchCourseDetails = async (id) => {
     try {
-      const response = await fetch(`/api/courses/${id}`);
+      const response = await fetch(
+        `http://localhost:5000/api/all-data/courses/by/id/${id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch course details");
+      }
       const data = await response.json();
-      setSelectedCourse(data);
+      setSelectedCourse({
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        category: data.category,
+        cover_image: data.cover_image,
+        lession: data.lession || [],
+      });
     } catch (error) {
       console.error("Error fetching course details:", error);
+      setError(error.message);
     }
   };
 
