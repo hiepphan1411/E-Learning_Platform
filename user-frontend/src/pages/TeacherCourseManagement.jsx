@@ -8,6 +8,8 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
   const { courseId } = useParams();
   const navigate = useNavigate();
 
@@ -76,11 +78,16 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
     navigate(`/teacher/courses/edit/${courseId}`);
   };
 
-  const handleDeleteCourse = async (courseId) => {
-    if (window.confirm("Are you sure you want to delete this course?")) {
+  const handleDeleteCourse = (courseId) => {
+    setCourseToDelete(courseId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (courseToDelete) {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/all-data/courses/by/id/${courseId}`,
+          `http://localhost:5000/api/all-data/courses/by/id/${courseToDelete}`,
           {
             method: "DELETE",
           }
@@ -90,11 +97,18 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
           throw new Error("Failed to delete course");
         }
 
-        setCourses(courses.filter((course) => course.id !== courseId));
+        setCourses(courses.filter((course) => course.id !== courseToDelete));
+        setShowDeleteConfirm(false);
+        setCourseToDelete(null);
       } catch (error) {
         console.error("Error deleting course:", error);
       }
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setCourseToDelete(null);
   };
 
   if (isAdding) {
@@ -130,6 +144,30 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
 
       {loading && <div>Đang tải...</div>}
       {error && <div className="text-red-600">{error}</div>}
+
+      {/* Custom Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">Xác nhận xóa</h3>
+            <p className="mb-6">Bạn có chắc chắn muốn xóa khóa học này?</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-cols gap-6">
         <div className="w-full p-4 rounded shadow">
