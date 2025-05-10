@@ -79,7 +79,17 @@ function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
   const handleDeleteCourse = async (courseId) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
       try {
-        await fetch(`/api/courses/${courseId}`, { method: "DELETE" });
+        const res = await fetch(
+          `http://localhost:5000/api/all-data/courses/by/id/${courseId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to delete course");
+        }
+
         setCourses(courses.filter((course) => course.id !== courseId));
       } catch (error) {
         console.error("Error deleting course:", error);

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaPlus, FaTrash, FaVideo } from "react-icons/fa";
 
 function CourseForm({ initialData = null }) {
   const navigate = useNavigate();
+  const params = useParams();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -44,13 +45,13 @@ function CourseForm({ initialData = null }) {
   const isEditing = Boolean(initialData);
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && isEditing) {
       const matchingField = predefinedFields.find(
         (field) => field.label === initialData.category?.name
       );
 
       setFormData({
-        id: initialData.id,
+        //id: initialData.id,
         name: initialData.name || "",
         description: initialData.description || "",
         price: initialData.price || 0,
@@ -77,7 +78,7 @@ function CourseForm({ initialData = null }) {
 
       setIsCustomField(!matchingField);
     }
-  }, [initialData]);
+  }, [initialData, isEditing]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +96,6 @@ function CourseForm({ initialData = null }) {
     }
   };
 
-  // Update category selection handling
   const handleCategoryChange = (e) => {
     if (e.target.value === "other") {
       setIsCustomField(true);
@@ -111,7 +111,6 @@ function CourseForm({ initialData = null }) {
     }
   };
 
-  // Modify handleSubmit to handle both create and update
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -120,7 +119,7 @@ function CourseForm({ initialData = null }) {
     try {
       const userInfo = JSON.parse(localStorage.getItem("user"));
 
-      let courseId = formData.id; // Lấy id từ formData nếu đang edit
+      let courseId = formData.id;
       if (!isEditing) {
         const idResponse = await fetch(
           "http://localhost:5000/api/latest-course-id"
@@ -146,7 +145,7 @@ function CourseForm({ initialData = null }) {
 
       const response = await fetch(
         isEditing
-          ? `http://localhost:5000/api/all-data/courses/${courseId}`
+          ? `http://localhost:5000/api/all-data/courses/by/id/${params.courseId}`
           : "http://localhost:5000/api/all-data/courses",
         {
           method: isEditing ? "PUT" : "POST",

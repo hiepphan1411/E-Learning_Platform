@@ -142,7 +142,7 @@ function MyCoursePage() {
                       </div>
                     </div>
                     <Link
-                      to={`/services/${course.id}`}
+                      to={`/courses/${course.id}`}
                       className="mt-4 block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
                     >
                       Vào học

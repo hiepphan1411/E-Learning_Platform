@@ -66,7 +66,7 @@ app.get("/api/all-data/courses/by/id/:courseId", async (req, res) => {
   try {
     const course = await mongoose.connection.db
       .collection("courses")
-      .findOne({ _id: courseId });
+      .findOne({ id: courseId });
 
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
@@ -127,17 +127,28 @@ app.put(
   }
 );
 
-app.delete("/api/courses/by-course-id/:courseId", async (req, res) => {
+app.delete("/api/all-data/courses/by/id/:courseId", async (req, res) => {
   const { courseId } = req.params;
 
   try {
-    const deletedCourse = await Course.findByIdAndDelete(courseId);
+    const courseDeletionResult = await mongoose.connection.db
+      .collection("courses")
+      .deleteOne({ id: courseId });
 
-    if (!deletedCourse) {
-      return res.status(404).json({ error: "Course not found" });
+    if (courseDeletionResult.deletedCount === 0) {
+      return res.status(404).json({
+        error:
+          "Course not found with specified custom ID for deletion: " + courseId,
+      });
     }
 
-    res.json({ message: "Course deleted successfully" });
+    await mongoose.connection.db
+      .collection("author_course")
+      .deleteMany({ course_id: courseId });
+
+    res.json({
+      message: "Course and associated author links deleted successfully",
+    });
   } catch (err) {
     console.error("Error deleting course:", err);
     res.status(500).json({ error: "Server error" });
@@ -262,7 +273,7 @@ app.get("/api/user-courses/:userId", async (req, res) => {
   }
 });
 
-//Get all coursé
+//Get all courses
 app.post("/api/all-data/courses", async (req, res) => {
   try {
     const newCourse = req.body;
