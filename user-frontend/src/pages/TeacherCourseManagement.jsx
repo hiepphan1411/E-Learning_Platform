@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseForm from "../components/teacher/CourseForm";
-import VideoUpload from "../components/teacher/VideoUpload";
 
 function TeacherCourseManagement({ isAdding = false, isEditing = false }) {
   const [courses, setCourses] = useState([]);
