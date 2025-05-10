@@ -25,11 +25,11 @@ function UserInfo({ user, onLogout }) {
         onClick={() => setIsOpen(!isOpen)}
       >
         <img
-          src={getImageSrc(user.avatarData)}
+          src={getImageSrc(user?.avatarData || "")}
           alt="Avatar"
           className="w-8 h-8 rounded-2xl"
         />
-        <div className="text-gray-700">{user.name}</div>
+        <div className="text-gray-700">{user?.name || "User"}</div>
       </div>
 
       {/* Dropdown Menu */}

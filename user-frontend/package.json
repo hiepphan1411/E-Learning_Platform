@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://hiepphan1411.github.io/E-Learning_Platform/user-frontend",
   "scripts": {
     "dev-client": "vite",
     "build": "vite build",
@@ -14,6 +13,7 @@
     "dev": "concurrently \"npm run client\" \"npm run server\""
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.9.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
