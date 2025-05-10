@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaPlus, FaTrash, FaVideo } from "react-icons/fa";
 
 function CourseForm({ initialData = null }) {
   const navigate = useNavigate();
+  const params = useParams();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -33,23 +34,33 @@ function CourseForm({ initialData = null }) {
   const [isCustomField, setIsCustomField] = useState(false);
 
   const predefinedFields = [
-    { value: "programming", label: "Lập trình" },
-    { value: "design", label: "Thiết kế" },
-    { value: "business", label: "Kinh doanh" },
-    { value: "marketing", label: "Marketing" },
-    { value: "music", label: "Âm nhạc" },
-    { value: "other", label: "Khác" },
+    { label: "Lập trình" },
+    { label: "Thiết kế" },
+    { label: "Kinh doanh" },
+    { label: "Marketing" },
+    { label: "Âm nhạc" },
+    { label: "Khác" },
   ];
 
+  const isEditing = Boolean(initialData);
+
   useEffect(() => {
-    if (initialData) {
+    if (initialData && isEditing) {
+      const matchingField = predefinedFields.find(
+        (field) => field.label === initialData.category?.name
+      );
+
       setFormData({
+        //id: initialData.id,
         name: initialData.name || "",
         description: initialData.description || "",
         price: initialData.price || 0,
-        category: initialData.category || { name: "", field: "" },
-        cover_image: null,
-        coverImagePreview: initialData.coverImagePreview,
+        category: {
+          name: initialData.category?.name || "",
+          field: initialData.category?.field || "",
+        },
+        cover_image: initialData.cover_image || null,
+        coverImagePreview: initialData.cover_image,
         lession: initialData.lession || [
           {
             lession_id: `lession${Date.now()}`,
@@ -64,8 +75,10 @@ function CourseForm({ initialData = null }) {
           },
         ],
       });
+
+      setIsCustomField(!matchingField);
     }
-  }, [initialData]);
+  }, [initialData, isEditing]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,6 +96,21 @@ function CourseForm({ initialData = null }) {
     }
   };
 
+  const handleCategoryChange = (e) => {
+    if (e.target.value === "other") {
+      setIsCustomField(true);
+      setFormData({
+        ...formData,
+        category: { ...formData.category, name: "" },
+      });
+    } else {
+      setFormData({
+        ...formData,
+        category: { ...formData.category, name: e.target.value },
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -91,65 +119,62 @@ function CourseForm({ initialData = null }) {
     try {
       const userInfo = JSON.parse(localStorage.getItem("user"));
 
-      // Get next course ID
-      const idResponse = await fetch(
-        "http://localhost:5000/api/latest-course-id"
-      );
-      const { nextId } = await idResponse.json();
+      let courseId = formData.id;
+      if (!isEditing) {
+        const idResponse = await fetch(
+          "http://localhost:5000/api/latest-course-id"
+        );
+        const { nextId } = await idResponse.json();
+        courseId = nextId;
+      }
 
-      const newCourse = {
-        id: nextId,
+      const courseData = {
+        id: courseId,
         name: formData.name,
         actor: userInfo?.name || "Unknown",
         category: formData.category,
-        outstanding: false,
+        outstanding: initialData?.outstanding || false,
         cover_image: formData.cover_image,
         price: parseFloat(formData.price),
         date: new Date().toISOString(),
         statusbar: "Chờ duyệt",
-        certificate: null,
+        certificate: initialData?.certificate || null,
         description: formData.description,
         lession: formData.lession,
       };
 
-      const courseResponse = await fetch(
-        "http://localhost:5000/api/all-data/courses",
+      const response = await fetch(
+        isEditing
+          ? `http://localhost:5000/api/all-data/courses/by/id/${params.courseId}`
+          : "http://localhost:5000/api/all-data/courses",
         {
+          method: isEditing ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(courseData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${isEditing ? "update" : "create"} course`);
+      }
+
+      if (!isEditing) {
+        await fetch("http://localhost:5000/api/author-courses", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newCourse),
-        }
-      );
-
-      if (!courseResponse.ok) {
-        throw new Error("Failed to create course");
+          body: JSON.stringify({
+            user_id: userInfo.id,
+            course_id: courseId,
+            posted_date: new Date().toISOString(),
+          }),
+        });
       }
 
-      // Create author_course record
-      const authorCourse = {
-        user_id: userInfo.id,
-        course_id: nextId,
-        posted_date: new Date().toISOString(),
-      };
-
-      const authorResponse = await fetch(
-        "http://localhost:5000/api/author-courses",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(authorCourse),
-        }
-      );
-
-      if (!authorResponse.ok) {
-        throw new Error("Failed to create author course relation");
-      }
-
-      navigate("/teacher/courses");
+      navigate("/courses");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -239,7 +264,7 @@ function CourseForm({ initialData = null }) {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    category: { ...formData.category, field: e.target.value },
+                    category: { ...formData.category, name: e.target.value },
                   })
                 }
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -262,21 +287,8 @@ function CourseForm({ initialData = null }) {
             </div>
           ) : (
             <select
-              value={formData.category.field}
-              onChange={(e) => {
-                if (e.target.value === "other") {
-                  setIsCustomField(true);
-                  setFormData({
-                    ...formData,
-                    category: { ...formData.category, field: "" },
-                  });
-                } else {
-                  setFormData({
-                    ...formData,
-                    category: { ...formData.category, field: e.target.value },
-                  });
-                }
-              }}
+              value={formData.category.name}
+              onChange={handleCategoryChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             >
@@ -296,11 +308,11 @@ function CourseForm({ initialData = null }) {
           </label>
           <input
             type="text"
-            value={formData.category.name}
+            value={formData.category.field}
             onChange={(e) =>
               setFormData({
                 ...formData,
-                category: { ...formData.category, name: e.target.value },
+                category: { ...formData.category, field: e.target.value },
               })
             }
             required
@@ -480,7 +492,7 @@ function CourseForm({ initialData = null }) {
       <div className="flex justify-end gap-4">
         <button
           type="button"
-          onClick={() => navigate("/teacher/courses")}
+          onClick={() => navigate("/courses")}
           className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
         >
           Hủy
@@ -490,7 +502,13 @@ function CourseForm({ initialData = null }) {
           disabled={loading}
           className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? "Đang tạo..." : "Tạo khóa học"}
+          {loading
+            ? isEditing
+              ? "Đang cập nhật..."
+              : "Đang tạo..."
+            : isEditing
+            ? "Chỉnh sửa khóa học"
+            : "Tạo khóa học"}
         </button>
       </div>
     </form>
