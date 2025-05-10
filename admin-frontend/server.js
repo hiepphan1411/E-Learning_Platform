@@ -4,6 +4,9 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { ObjectId } from 'mongodb';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -21,11 +24,9 @@ const io = new Server(httpServer, {
 });
 
 // 1) Kết nối đúng DB coursedb
-mongoose.connect(
-  "mongodb+srv://phanphuochiep2004:pph14112004@cluster0.p8u7idq.mongodb.net/coursedb?retryWrites=true&w=majority"
-)
-  .then(() => console.log("MongoDB connected to coursedb"))
-  .catch((err) => console.error(err));
+const MONGO_URL = process.env.MONGO_URL;
+
+mongoose.connect(MONGO_URL);
 
 const courseSchema = new mongoose.Schema({}, { strict: false });
 const Course = mongoose.model("Course", courseSchema); 
