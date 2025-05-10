@@ -12,6 +12,7 @@ const routeLabels = {
   'settings': 'Cài đặt',
   'my-courses': 'Khóa học của tôi',
   'about': 'Về chúng tôi',
+  'success': 'Thành công',
 };
 
 const Breadcrumb = () => {
@@ -24,7 +25,7 @@ const Breadcrumb = () => {
     const fetchDynamicData = async () => {
       const newLabels = { ...dynamicLabels };
       
-      const courseIdMatch = location.pathname.match(/\/(?:services|courses|payment|course-trial)\/([^/]+)/);
+      const courseIdMatch = location.pathname.match(/\/(?:services|courses|payment|course-trial|teacher\/courses\/edit)\/([^/]+)/);
       if (courseIdMatch && courseIdMatch[1]) {
         const courseId = courseIdMatch[1];
         
@@ -44,7 +45,7 @@ const Breadcrumb = () => {
     };
     
     fetchDynamicData();
-  }, [location.pathname]);
+  }, [location.pathname, dynamicLabels]);
 
   useEffect(() => {
     const pathParts = location.pathname.split('/').filter(part => part !== '');
@@ -64,16 +65,29 @@ const Breadcrumb = () => {
       if (part === 'home' && index === 0) return;
       
       if (part.match(/^[0-9a-fA-F]+$/) && part.length > 5) {
-
         const label = dynamicLabels[part] || 'Chi tiết';
+        
+        let path = currentPath;
+        if (pathParts[index-1] === 'payment' && pathParts[index+1] === 'success') {
+          path = `/payment/success/${part}`;
+        }
+        
         breadcrumbItems.push({
           label,
-          path: currentPath,
+          path,
           key: part
         });
       } else {
+        if (part === 'teacher') {
+          breadcrumbItems.push({
+            label: 'Giáo viên',
+            path: currentPath,
+            key: currentPath
+          });
+          return;
+        }
 
-        if (part === 'add' && pathParts[index-1] === 'courses') {
+        if (part === 'add' && index > 0 && pathParts[index-1] === 'courses' && pathParts[index-2] === 'teacher') {
           breadcrumbItems.push({
             label: 'Thêm khóa học',
             path: currentPath,
@@ -82,7 +96,7 @@ const Breadcrumb = () => {
           return;
         }
         
-        if (part === 'edit' && pathParts[index-1] === 'courses') {
+        if (part === 'edit' && index > 0 && pathParts[index-1] === 'courses' && pathParts[index-2] === 'teacher') {
           breadcrumbItems.push({
             label: 'Chỉnh sửa khóa học',
             path: currentPath,
@@ -90,8 +104,8 @@ const Breadcrumb = () => {
           });
           return;
         }
-        
-        if (part === 'success' && pathParts[index-1] === 'payment') {
+
+        if (part === 'success' && index > 0 && pathParts[index-1] === 'payment') {
           breadcrumbItems.push({
             label: 'Thanh toán thành công',
             path: currentPath,
@@ -99,7 +113,6 @@ const Breadcrumb = () => {
           });
           return;
         }
-        
 
         const label = routeLabels[part] || part.charAt(0).toUpperCase() + part.slice(1);
         breadcrumbItems.push({
@@ -113,7 +126,7 @@ const Breadcrumb = () => {
     setBreadcrumbs(breadcrumbItems);
   }, [location.pathname, dynamicLabels]);
 
-  if (breadcrumbs.length <= 1) return null;
+  if (location.pathname === '/' || breadcrumbs.length <= 1) return null;
 
   return (
     <nav className="bg-gray-50 py-3 px-5 rounded-md shadow-sm mb-5">
